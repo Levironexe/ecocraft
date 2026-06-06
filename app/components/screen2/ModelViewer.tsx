@@ -7,14 +7,18 @@ import { PixelBox } from '../ui/PixelBox';
 
 interface ModelViewerProps {
   craft: Craft;
+  cachedImageUrl?: string;
+  onImageGenerated?: (url: string) => void;
 }
 
-export function ModelViewer({ craft }: ModelViewerProps) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+const inFlightRequests = new Set<string>();
+
+export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelViewerProps) {
+  const [imageUrl, setImageUrl] = useState<string | null>(cachedImageUrl || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const fetchedRef = useRef<string | null>(null);
   const isAiCraft = craft.id.startsWith('ai-suggestion-');
+  const craftIdRef = useRef(craft.id);
 
   useEffect(() => {
     if (craft.modelPath) {
@@ -23,10 +27,19 @@ export function ModelViewer({ craft }: ModelViewerProps) {
   }, [craft.modelPath]);
 
   useEffect(() => {
-    if (!isAiCraft || craft.modelPath) return;
-    if (fetchedRef.current === craft.id) return;
+    craftIdRef.current = craft.id;
 
-    fetchedRef.current = craft.id;
+    if (cachedImageUrl) {
+      setImageUrl(cachedImageUrl);
+      setLoading(false);
+      setError(false);
+      return;
+    }
+
+    if (!isAiCraft || craft.modelPath) return;
+    if (inFlightRequests.has(craft.id)) return;
+
+    inFlightRequests.add(craft.id);
     setLoading(true);
     setError(false);
     setImageUrl(null);
@@ -48,15 +61,25 @@ export function ModelViewer({ craft }: ModelViewerProps) {
     })
       .then((res) => res.json())
       .then((data) => {
+        inFlightRequests.delete(craft.id);
+        if (craftIdRef.current !== craft.id) return;
         if (data.imageUrl) {
           setImageUrl(data.imageUrl);
+          onImageGenerated?.(data.imageUrl);
         } else {
           setError(true);
         }
       })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [craft.id, craft.modelPath, craft.name, craft.description, craft.materials, isAiCraft]);
+      .catch(() => {
+        inFlightRequests.delete(craft.id);
+        if (craftIdRef.current !== craft.id) return;
+        setError(true);
+      })
+      .finally(() => {
+        if (craftIdRef.current === craft.id) setLoading(false);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [craft.id, cachedImageUrl]);
 
   if (craft.modelPath) {
     return (
@@ -75,20 +98,20 @@ export function ModelViewer({ craft }: ModelViewerProps) {
   if (isAiCraft) {
     return (
       <PixelBox className="flex-1 flex items-center justify-center overflow-hidden relative">
-        {loading && (
+        {loading && !imageUrl && (
           <div className="text-center text-[var(--text-muted)]">
             <div className="text-[48px] mb-[8px] animate-pulse">🎨</div>
             <div className="text-[20px]">Đang tạo hình ảnh...</div>
             <div className="text-[18px] text-[var(--text-muted)] mt-[4px]">Chờ khoảng 15-30 giây</div>
           </div>
         )}
-        {error && !loading && (
+        {error && !loading && !imageUrl && (
           <div className="text-center text-[var(--text-muted)]">
             <div className="text-[64px] mb-[8px]">{craft.emoji}</div>
             <div className="text-[20px]">📝 Gợi ý từ AI</div>
           </div>
         )}
-        {imageUrl && !loading && (
+        {imageUrl && (
           <img
             src={imageUrl}
             alt={craft.name}

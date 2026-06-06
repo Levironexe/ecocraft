@@ -21,10 +21,14 @@ export default function Home() {
   const [selectedCraft, setSelectedCraft] = useState<Craft | null>(null);
   const [aiSuggestion, setAiSuggestion] = useState<Craft | null>(null);
   const [aiMatchedCrafts, setAiMatchedCrafts] = useState<MatchResult[]>([]);
+  const [imageCache, setImageCache] = useState<Record<string, string>>({});
   const [llmConfig, setLlmConfig] = useState<LLMConfig>(DEFAULT_CONFIG);
-  const [gameStats, setGameStats] = useState<GameStats>(getStats());
+  const [gameStats, setGameStats] = useState<GameStats>({
+    craftsCompleted: 0, itemsRecycled: 0, coachMessages: 0, level: 1, points: 0, activityDates: [],
+  });
 
   useEffect(() => {
+    setGameStats(getStats());
     try {
       const saved = localStorage.getItem(LLM_CONFIG_KEY);
       if (saved) setLlmConfig(JSON.parse(saved));
@@ -178,6 +182,8 @@ export default function Home() {
             llmConfig={llmConfig}
             onCraftComplete={handleCraftComplete}
             onCoachMessage={handleCoachMessage}
+            imageCache={imageCache}
+            onImageGenerated={(craftId, url) => setImageCache((prev) => ({ ...prev, [craftId]: url }))}
           />
         </div>
       ) : (

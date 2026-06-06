@@ -75,10 +75,17 @@ export async function POST(request: NextRequest) {
         .join(', ');
 
       const suggestionPrompt = CRAFT_SUGGESTION_PROMPT.replace('{materials_json}', materialsJson);
-      const suggestionResult = await chat(suggestionPrompt, [{ role: 'user', content: 'Gợi ý sản phẩm' }], llmConfig);
+      const suggestionResult = await chat(suggestionPrompt, [{ role: 'user', content: 'Gợi ý sản phẩm' }], llmConfig, true);
 
       const cleanedSuggestion = suggestionResult.replace(/```json\n?|```\n?/g, '').trim();
-      const suggestion = JSON.parse(cleanedSuggestion);
+      let suggestion;
+      try {
+        suggestion = JSON.parse(cleanedSuggestion);
+      } catch {
+        const jsonMatch = cleanedSuggestion.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('No JSON in response');
+        suggestion = JSON.parse(jsonMatch[0]);
+      }
 
       if (suggestion.canSuggest && suggestion.steps?.length > 0) {
         suggestedCraft = {

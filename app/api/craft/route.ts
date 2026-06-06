@@ -24,10 +24,22 @@ export async function POST(request: NextRequest) {
       .join(', ');
 
     const prompt = CRAFT_SUGGESTION_PROMPT.replace('{materials_json}', materialsJson);
-    const result = await chat(prompt, [{ role: 'user', content: 'Gợi ý sản phẩm từ các vật liệu này' }], llmConfig);
+    const result = await chat(prompt, [{ role: 'user', content: 'Gợi ý sản phẩm từ các vật liệu này' }], llmConfig, true);
 
     const cleaned = result.replace(/```json\n?|```\n?/g, '').trim();
-    const suggestion = JSON.parse(cleaned);
+    let suggestion;
+    try {
+      suggestion = JSON.parse(cleaned);
+    } catch {
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        return Response.json({
+          craft: null,
+          message: 'Mình chưa nghĩ ra cách làm hay với những thứ này.',
+        });
+      }
+      suggestion = JSON.parse(jsonMatch[0]);
+    }
 
     if (!suggestion.canSuggest) {
       return Response.json({
@@ -67,7 +79,8 @@ export async function POST(request: NextRequest) {
     };
 
     return Response.json({ craft });
-  } catch {
+  } catch (err) {
+    console.error('[/api/craft] Error:', err);
     return Response.json({ error: 'Mình đang gặp sự cố, thử lại nhé!' }, { status: 500 });
   }
 }

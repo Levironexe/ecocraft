@@ -13,9 +13,11 @@ interface BuildScreenProps {
   llmConfig: LLMConfig;
   onCraftComplete: (craft: Craft) => void;
   onCoachMessage: () => void;
+  imageCache: Record<string, string>;
+  onImageGenerated: (craftId: string, url: string) => void;
 }
 
-export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, onCoachMessage }: BuildScreenProps) {
+export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, onCoachMessage, imageCache, onImageGenerated }: BuildScreenProps) {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showCelebration, setShowCelebration] = useState(false);
   const hasAwarded = useRef(false);
@@ -73,7 +75,7 @@ export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, 
       <MaterialsBar craft={craft} selectedItems={selectedItems} />
       <div className="flex-1 grid min-h-0" style={{ gridTemplateColumns: '55% 22.5% 22.5%' }}>
         <div className="flex flex-col border-r-[var(--pixel)] border-r-solid border-r-[var(--border)] overflow-hidden">
-          <ModelViewer craft={craft} />
+          <ModelViewer craft={craft} cachedImageUrl={imageCache[craft.id]} onImageGenerated={(url) => onImageGenerated(craft.id, url)} />
         </div>
         <div className="border-r-[var(--pixel)] border-r-solid border-r-[var(--border)] overflow-hidden">
           <StepsList
