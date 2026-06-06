@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 3D models (too large for git, use LFS or download separately)
+public/models/*.glb
+
+# local IDE/editor
+.vscode/
+.claude/

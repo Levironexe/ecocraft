@@ -1,65 +1,166 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useMemo, useEffect } from 'react';
+import { Material, SelectedItem, Craft, LLMConfig, MatchResult, GameStats } from './lib/types';
+import { crafts } from './lib/crafts';
+import { matchCrafts } from './lib/matcher';
+import { getStats, saveStats, completeCraft, recordCoachMessage } from './lib/gamification';
+import { HUD } from './components/HUD';
+import { ScreenTabs } from './components/ScreenTabs';
+import { MaterialScreen } from './components/screen1/MaterialScreen';
+import { SuggestionCards } from './components/screen1/SuggestionCards';
+import { BuildScreen } from './components/screen2/BuildScreen';
+
+const LLM_CONFIG_KEY = 'ecocraft-llm-config';
+const DEFAULT_CONFIG: LLMConfig = { provider: 'groq' };
 
 export default function Home() {
+  const [activeScreen, setActiveScreen] = useState<1 | 2>(1);
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const [selectedCraft, setSelectedCraft] = useState<Craft | null>(null);
+  const [aiSuggestion, setAiSuggestion] = useState<Craft | null>(null);
+  const [aiMatchedCrafts, setAiMatchedCrafts] = useState<MatchResult[]>([]);
+  const [llmConfig, setLlmConfig] = useState<LLMConfig>(DEFAULT_CONFIG);
+  const [gameStats, setGameStats] = useState<GameStats>(getStats());
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LLM_CONFIG_KEY);
+      if (saved) setLlmConfig(JSON.parse(saved));
+    } catch { /* use default */ }
+    setGameStats(getStats());
+  }, []);
+
+  const handleConfigChange = (config: LLMConfig) => {
+    setLlmConfig(config);
+    localStorage.setItem(LLM_CONFIG_KEY, JSON.stringify(config));
+  };
+
+  const handleCraftComplete = (craft: Craft) => {
+    const updated = completeCraft(gameStats, craft);
+    saveStats(updated);
+    setGameStats(updated);
+  };
+
+  const handleCoachMessage = () => {
+    const updated = recordCoachMessage(gameStats);
+    saveStats(updated);
+    setGameStats(updated);
+  };
+
+  const suggestions = useMemo(
+    () => matchCrafts(selectedItems, crafts).slice(0, 3),
+    [selectedItems]
+  );
+
+  const allSuggestions = aiMatchedCrafts.length > 0
+    ? aiMatchedCrafts.slice(0, 3)
+    : suggestions;
+
+  const handleAddItem = (item: SelectedItem) => {
+    setSelectedItems((prev) => {
+      const existing = prev.findIndex(
+        (i) => i.materialId === item.materialId && i.size === item.size
+      );
+      if (existing >= 0) {
+        const updated = [...prev];
+        updated[existing] = {
+          ...updated[existing],
+          quantity: updated[existing].quantity + item.quantity,
+        };
+        return updated;
+      }
+      return [...prev, item];
+    });
+  };
+
+  const handleAddItems = (items: SelectedItem[]) => {
+    setSelectedItems((prev) => {
+      let updated = [...prev];
+      for (const item of items) {
+        const existing = updated.findIndex(
+          (i) => i.materialId === item.materialId && i.size === item.size
+        );
+        if (existing >= 0) {
+          updated[existing] = {
+            ...updated[existing],
+            quantity: updated[existing].quantity + item.quantity,
+          };
+        } else {
+          updated = [...updated, item];
+        }
+      }
+      return updated;
+    });
+  };
+
+  const handleRemoveItem = (index: number) => {
+    setSelectedItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateSuggestions = (matched: MatchResult[], aiCraft?: Craft) => {
+    if (matched.length > 0) setAiMatchedCrafts(matched);
+    if (aiCraft) setAiSuggestion(aiCraft);
+  };
+
+  const handleSelectCraft = (craft: Craft) => {
+    setSelectedCraft(craft);
+    setActiveScreen(2);
+  };
+
+  const handleCraft = () => {
+    if (allSuggestions.length > 0) {
+      setSelectedCraft(allSuggestions[0].craft);
+    } else if (aiSuggestion) {
+      setSelectedCraft(aiSuggestion);
+    } else {
+      const showcase = crafts.find((c) => c.isShowcase);
+      if (showcase) setSelectedCraft(showcase);
+    }
+    setActiveScreen(2);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="min-h-screen flex flex-col">
+      <HUD llmConfig={llmConfig} onConfigChange={handleConfigChange} gameStats={gameStats} />
+      <ScreenTabs activeScreen={activeScreen} onTabChange={setActiveScreen} />
+      {activeScreen === 1 ? (
+        <>
+          <div className="flex-1 mx-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
+            <MaterialScreen
+              selectedMaterial={selectedMaterial}
+              selectedItems={selectedItems}
+              onSelectMaterial={setSelectedMaterial}
+              onAddItem={handleAddItem}
+              onAddItems={handleAddItems}
+              onRemoveItem={handleRemoveItem}
+              onCraft={handleCraft}
+              llmConfig={llmConfig}
+              onUpdateSuggestions={handleUpdateSuggestions}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+          <SuggestionCards
+            suggestions={allSuggestions}
+            aiSuggestion={aiSuggestion}
+            onSelectCraft={handleSelectCraft}
+          />
+        </>
+      ) : selectedCraft ? (
+        <div className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
+          <BuildScreen
+            craft={selectedCraft}
+            selectedItems={selectedItems}
+            llmConfig={llmConfig}
+            onCraftComplete={handleCraftComplete}
+            onCoachMessage={handleCoachMessage}
+          />
         </div>
-      </main>
+      ) : (
+        <div className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)] flex items-center justify-center h-[400px] text-[var(--text-muted)] text-[24px] screen-enter">
+          🔨 Chọn sản phẩm để bắt đầu chế tạo!
+        </div>
+      )}
     </div>
   );
 }
