@@ -73,7 +73,7 @@ export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, 
       <MaterialsBar craft={craft} selectedItems={selectedItems} />
       <div className="flex-1 grid min-h-0" style={{ gridTemplateColumns: '55% 22.5% 22.5%' }}>
         <div className="flex flex-col border-r-[var(--pixel)] border-r-solid border-r-[var(--border)] overflow-hidden">
-          <ModelViewer modelPath={craft.modelPath} />
+          <ModelViewer craft={craft} />
         </div>
         <div className="border-r-[var(--pixel)] border-r-solid border-r-[var(--border)] overflow-hidden">
           <StepsList

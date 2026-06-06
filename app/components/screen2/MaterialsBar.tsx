@@ -4,6 +4,13 @@ import { useEffect } from 'react';
 import { Craft, SelectedItem } from '../../lib/types';
 import { materials } from '../../lib/materials';
 
+const toolModels: Record<string, string> = {
+  'Kéo': '/models/keo-cat.glb',
+  'Keo dán': '/models/keo-dan.glb',
+  'Bút lông': '/models/but-long.glb',
+  'Sơn': '/models/son.glb',
+};
+
 interface MaterialsBarProps {
   craft: Craft;
   selectedItems: SelectedItem[];
@@ -45,7 +52,7 @@ export function MaterialsBar({ craft, selectedItems }: MaterialsBarProps) {
                   camera-controls={false}
                   shadow-intensity="0"
                   rotation-per-second="36deg"
-                  style={{ width: '24px', height: '24px', pointerEvents: 'none', backgroundColor: 'transparent' }}
+                  style={{ width: '36px', height: '36px', pointerEvents: 'none', backgroundColor: 'transparent' }}
                 />
               ) : (
                 <span>{mat.emoji}</span>
@@ -54,14 +61,29 @@ export function MaterialsBar({ craft, selectedItems }: MaterialsBarProps) {
             </span>
           );
         })}
-        {craft.tools.map((tool) => (
-          <span
-            key={tool}
-            className="px-[8px] py-[2px] text-[18px] border-[2px] border-solid border-[var(--accent)] bg-[var(--accent-light)] text-[var(--text)]"
-          >
-            🔧 {tool}
-          </span>
-        ))}
+        {craft.tools.map((tool) => {
+          const toolModel = toolModels[tool];
+          return (
+            <span
+              key={tool}
+              className="flex items-center gap-[4px] px-[8px] py-[2px] text-[18px] border-[2px] border-solid border-[var(--accent)] bg-[var(--accent-light)] text-[var(--text)]"
+            >
+              {toolModel ? (
+                <model-viewer
+                  src={toolModel}
+                  auto-rotate
+                  camera-controls={false}
+                  shadow-intensity="0"
+                  rotation-per-second="36deg"
+                  style={{ width: '36px', height: '36px', pointerEvents: 'none', backgroundColor: 'transparent' }}
+                />
+              ) : (
+                <span>🔧</span>
+              )}
+              {tool}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

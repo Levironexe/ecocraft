@@ -15,6 +15,7 @@ interface MaterialScreenProps {
   onAddItems: (items: SelectedItem[]) => void;
   onRemoveItem: (index: number) => void;
   onCraft: () => void;
+  craftLoading?: boolean;
   llmConfig: LLMConfig;
   onUpdateSuggestions: (crafts: MatchResult[], aiCraft?: Craft) => void;
 }
@@ -27,6 +28,7 @@ export function MaterialScreen({
   onAddItems,
   onRemoveItem,
   onCraft,
+  craftLoading,
   llmConfig,
   onUpdateSuggestions,
 }: MaterialScreenProps) {
@@ -71,7 +73,7 @@ export function MaterialScreen({
       </div>
       <div className="p-[14px] flex flex-col overflow-y-auto">
         <ItemPreview material={selectedMaterial} onAdd={onAddItem} />
-        <SelectedItems items={selectedItems} onRemove={onRemoveItem} onCraft={onCraft} />
+        <SelectedItems items={selectedItems} onRemove={onRemoveItem} onCraft={onCraft} craftLoading={craftLoading} />
       </div>
     </div>
   );

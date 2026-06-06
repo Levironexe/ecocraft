@@ -100,6 +100,7 @@ export async function POST(request: NextRequest) {
             detail: s.detail,
           })),
           modelPath: null,
+          imagePrompt: suggestion.image_prompt || undefined,
           isShowcase: false,
         };
         return Response.json({ reply, extractedItems, suggestedCraft });

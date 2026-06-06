@@ -9,9 +9,10 @@ interface SelectedItemsProps {
   items: SelectedItem[];
   onRemove: (index: number) => void;
   onCraft: () => void;
+  craftLoading?: boolean;
 }
 
-export function SelectedItems({ items, onRemove, onCraft }: SelectedItemsProps) {
+export function SelectedItems({ items, onRemove, onCraft, craftLoading }: SelectedItemsProps) {
   return (
     <PixelBox className="p-[14px] flex-1 flex flex-col min-h-0">
       <div className="text-[22px] text-[var(--primary-dark)] mb-[8px] flex items-center gap-[6px]">
@@ -64,8 +65,8 @@ export function SelectedItems({ items, onRemove, onCraft }: SelectedItemsProps) 
         )}
       </div>
       <div className="mt-[10px]">
-        <PixelButton variant="accent" fullWidth disabled={items.length === 0} onClick={onCraft}>
-          🚀 Chế Tạo Ngay!
+        <PixelButton variant="accent" fullWidth disabled={items.length === 0 || craftLoading} onClick={onCraft}>
+          {craftLoading ? '🔄 AI đang suy nghĩ...' : '🚀 Chế Tạo Ngay!'}
         </PixelButton>
       </div>
     </PixelBox>

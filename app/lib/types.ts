@@ -32,6 +32,7 @@ export interface Craft {
   tools: string[];
   steps: CraftStep[];
   modelPath: string | null;
+  imagePrompt?: string;
   isShowcase: boolean;
 }
 

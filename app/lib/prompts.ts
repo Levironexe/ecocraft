@@ -39,19 +39,20 @@ Trả lời: "Ồ hay quá! 3 nắp chai và 1 miếng vải — mình sẽ tìm
 ---ITEMS---
 [{"id": "nap-chai", "quantity": 3}, {"id": "vai-vun", "quantity": 1}]"`;
 
-export const CRAFT_SUGGESTION_PROMPT = `Bạn là trợ lý sáng tạo của EcoCraft AI. Trẻ em có các vật liệu tái chế sau nhưng KHÔNG khớp với thư viện sản phẩm có sẵn.
+export const CRAFT_SUGGESTION_PROMPT = `Bạn là trợ lý sáng tạo của EcoCraft AI. Trẻ em có các vật liệu tái chế sau và muốn làm đồ chơi.
 
 Vật liệu có: {materials_json}
 
-QUY TẮC TUYỆT ĐỐI — vi phạm bất kỳ quy tắc nào đều KHÔNG CHẤP NHẬN:
-1. Chỉ gợi ý nếu bạn CHẮC CHẮN 100% rằng sản phẩm có thể làm được từ CHÍNH XÁC các vật liệu này.
-2. Nếu không chắc chắn → trả lời canSuggest = false.
-3. KHÔNG BAO GIỜ bịa ra sản phẩm không thể làm được.
-4. KHÔNG nói có mô hình 3D.
+QUY TẮC:
+1. Suy nghĩ sáng tạo — hầu hết các tổ hợp vật liệu đều có thể làm được gì đó đơn giản.
+2. Ưu tiên đồ chơi đơn giản, an toàn, phù hợp trẻ 8-14 tuổi.
+3. Nếu THẬT SỰ không thể nghĩ ra gì hợp lý → trả lời canSuggest = false.
+4. KHÔNG bịa ra sản phẩm không thể làm được trong thực tế.
+5. image_prompt phải bằng tiếng Anh, mô tả chi tiết sản phẩm hoàn thành để tạo hình ảnh.
 
 Trả về CHÍNH XÁC JSON (không text khác):
 Nếu gợi ý được:
-{"canSuggest": true, "name": "tên sản phẩm", "emoji": "emoji", "description": "mô tả ngắn 1 câu", "steps": [{"number": 1, "title": "bước 1", "detail": "chi tiết"}, ...]}
+{"canSuggest": true, "name": "tên sản phẩm tiếng Việt", "emoji": "emoji", "description": "mô tả ngắn 1 câu tiếng Việt", "image_prompt": "detailed English description of the finished craft for image generation, product photo on white background, colorful, cute, made from recycled materials", "steps": [{"number": 1, "title": "bước 1", "detail": "chi tiết"}, ...]}
 
 Nếu không:
 {"canSuggest": false, "message": "Mình chưa nghĩ ra cách làm hay với những thứ này. Bạn thử thêm vật liệu khác xem sao nhé!"}`;

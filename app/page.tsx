@@ -109,16 +109,39 @@ export default function Home() {
     setActiveScreen(2);
   };
 
-  const handleCraft = () => {
-    if (allSuggestions.length > 0) {
-      setSelectedCraft(allSuggestions[0].craft);
-    } else if (aiSuggestion) {
-      setSelectedCraft(aiSuggestion);
-    } else {
-      const showcase = crafts.find((c) => c.isShowcase);
-      if (showcase) setSelectedCraft(showcase);
+  const [craftLoading, setCraftLoading] = useState(false);
+
+  const handleCraft = async () => {
+    const highMatch = allSuggestions.find((s) => s.matchPercent >= 70);
+    if (highMatch) {
+      setSelectedCraft(highMatch.craft);
+      setActiveScreen(2);
+      return;
     }
-    setActiveScreen(2);
+
+    if (aiSuggestion) {
+      setSelectedCraft(aiSuggestion);
+      setActiveScreen(2);
+      return;
+    }
+
+    if (selectedItems.length === 0) return;
+
+    setCraftLoading(true);
+    try {
+      const res = await fetch('/api/craft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selectedItems, llmConfig }),
+      });
+      const data = await res.json();
+      if (data.craft) {
+        setSelectedCraft(data.craft);
+        setAiSuggestion(data.craft);
+        setActiveScreen(2);
+      }
+    } catch { /* error handled silently */ }
+    finally { setCraftLoading(false); }
   };
 
   return (
@@ -136,6 +159,7 @@ export default function Home() {
               onAddItems={handleAddItems}
               onRemoveItem={handleRemoveItem}
               onCraft={handleCraft}
+              craftLoading={craftLoading}
               llmConfig={llmConfig}
               onUpdateSuggestions={handleUpdateSuggestions}
             />

@@ -17,7 +17,7 @@ export function StepsList({ steps, completedSteps, onToggleStep }: StepsListProp
   return (
     <div className="flex flex-col gap-[6px] overflow-y-auto h-full p-[8px]">
       <div className="text-[20px] text-[var(--primary-dark)] mb-[4px] flex items-center gap-[6px]">
-        <span>▸</span> 📋 Các Bước Làm
+        <span>▸</span> 📋 Các Bước Làm (Click để đánh dấu hoàn thành)
       </div>
       {steps.map((step) => {
         const isDone = completedSteps.has(step.number);
