@@ -85,7 +85,7 @@ export function CoachChat({ craft, currentStep, llmConfig, onCoachMessage }: Coa
             <span className={`text-[18px] block mb-[2px] ${
               msg.role === 'assistant' ? 'text-[var(--primary-dark)]' : 'text-[var(--accent)]'
             }`}>
-              {msg.role === 'assistant' ? '🔧 Thợ Cả' : '👦 Bạn'}
+              {msg.role === 'assistant' ? 'Thợ Cả' : 'Bạn'}
             </span>
             {msg.content}
           </div>

@@ -13,10 +13,13 @@ interface ModelViewerProps {
 
 const inFlightRequests = new Set<string>();
 
-type PipelineStage = 'idle' | 'generating-image' | 'generating-3d' | 'done' | 'error';
+function craftKey(craft: { materials: { materialId: string; quantity: number }[] }): string {
+  return craft.materials.map(m => `${m.materialId}:${m.quantity}`).sort().join('|');
+}
+
+type PipelineStage = 'idle' | 'generating-3d' | 'done' | 'error';
 
 export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelViewerProps) {
-  const [imageUrl, setImageUrl] = useState<string | null>(cachedImageUrl || null);
   const [glbUrl, setGlbUrl] = useState<string | null>(null);
   const [stage, setStage] = useState<PipelineStage>('idle');
   const [stageMessage, setStageMessage] = useState('');
@@ -35,47 +38,19 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
     setStage('idle');
     setStageMessage('');
 
-    if (cachedImageUrl) {
-      setImageUrl(cachedImageUrl);
-      return;
-    }
-
     if (!isAiCraft || craft.modelPath) return;
-    if (inFlightRequests.has(craft.id)) return;
+    const key = craftKey(craft);
+    if (inFlightRequests.has(key)) return;
 
-    inFlightRequests.add(craft.id);
+    inFlightRequests.add(key);
 
-    setStage('generating-image');
-    setStageMessage('Đang tạo hình ảnh...');
-    setImageUrl(null);
+    setStage('generating-3d');
+    setStageMessage('Đang tạo mô hình 3D... (2-5 phút)');
 
     const materialNames = craft.materials
       .map((cm) => materials.find((m) => m.id === cm.materialId)?.name)
       .filter(Boolean)
       .join(', ');
-
-    fetch('/api/generate-image', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        craftName: craft.name,
-        description: craft.description,
-        materials: materialNames,
-        imagePrompt: craft.imagePrompt,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (craftIdRef.current !== craft.id) return;
-        if (data.imageUrl) {
-          setImageUrl(data.imageUrl);
-          onImageGenerated?.(data.imageUrl);
-        }
-      })
-      .catch(() => { /* image gen failed, not critical */ });
-
-    setStage('generating-3d');
-    setStageMessage('Đang tạo mô hình 3D... (2-5 phút)');
 
     fetch('/api/generate-model', {
       method: 'POST',
@@ -93,31 +68,34 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
     })
       .then((res) => res.json())
       .then((data) => {
-        inFlightRequests.delete(craft.id);
+        inFlightRequests.delete(key);
         if (craftIdRef.current !== craft.id) return;
         if (data.glbUrl) {
           setGlbUrl(data.glbUrl);
           setStage('done');
           setStageMessage(data.fromCache ? 'Mô hình từ kho!' : 'Mô hình 3D hoàn tất!');
+          onImageGenerated?.(data.glbUrl);
         } else if (data.error) {
           setStage('error');
           setStageMessage('Không tạo được mô hình 3D');
         }
       })
       .catch(() => {
-        inFlightRequests.delete(craft.id);
+        inFlightRequests.delete(key);
         if (craftIdRef.current !== craft.id) return;
         setStage('error');
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [craft.id, cachedImageUrl]);
 
+  // Library craft with pre-installed GLB
   if (craft.modelPath) {
     return (
       <div className="flex-1 relative">
         <model-viewer
           src={craft.modelPath}
           auto-rotate
+          rotation-per-second="36deg"
           camera-controls
           shadow-intensity="1"
           style={{ width: '100%', height: '100%' }}
@@ -126,12 +104,14 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
     );
   }
 
+  // AI craft with generated GLB ready
   if (glbUrl) {
     return (
       <div className="flex-1 relative">
         <model-viewer
           src={glbUrl}
           auto-rotate
+          rotation-per-second="36deg"
           camera-controls
           shadow-intensity="1"
           style={{ width: '100%', height: '100%' }}
@@ -143,41 +123,29 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
     );
   }
 
+  // AI craft — generating
   if (isAiCraft) {
     return (
       <PixelBox className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
-        {imageUrl ? (
-          <>
-            <img
-              src={imageUrl}
-              alt={craft.name}
-              className="max-w-full max-h-[70%] object-contain"
-              onError={() => setImageUrl(null)}
-            />
-            {stage === 'generating-3d' && (
-              <div className="mt-[8px] text-center text-[var(--text-muted)]">
-                <div className="text-[18px] animate-pulse">⏳ {stageMessage}</div>
-                <div className="text-[18px]">Bạn có thể làm theo hướng dẫn trong khi chờ</div>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center text-[var(--text-muted)]">
-            <div className="text-[48px] mb-[8px] animate-pulse">
-              {stage === 'generating-image' ? '🎨' : stage === 'generating-3d' ? '🧊' : craft.emoji}
-            </div>
-            <div className="text-[20px]">{stageMessage || '📝 Gợi ý từ AI'}</div>
+        <div className="text-center text-[var(--text-muted)]">
+          <div className="text-[48px] mb-[8px] animate-pulse">
+            {stage === 'generating-3d' ? '🧊' : craft.emoji}
           </div>
-        )}
+          <div className="text-[20px]">{stageMessage || '📝 Gợi ý từ AI'}</div>
+          {stage === 'generating-3d' && (
+            <div className="text-[18px] mt-[4px]">Bạn có thể làm theo hướng dẫn trong khi chờ</div>
+          )}
+        </div>
         {stage === 'error' && (
           <div className="absolute bottom-[8px] text-[18px] text-[var(--accent)]">
-            Không tạo được mô hình 3D — dùng hình ảnh thay thế
+            Không tạo được mô hình 3D
           </div>
         )}
       </PixelBox>
     );
   }
 
+  // Non-showcase library craft (no model, no AI)
   return (
     <PixelBox className="flex-1 flex items-center justify-center">
       <div className="text-center text-[var(--text-muted)]">

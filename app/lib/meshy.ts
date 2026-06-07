@@ -1,4 +1,4 @@
-const MESHY_API = 'https://api.meshy.ai/openapi/v2';
+const MESHY_API = 'https://api.meshy.ai/openapi/v1';
 
 interface MeshyTaskResponse {
   result: string;
@@ -35,7 +35,8 @@ export async function createImageTo3DTask(imageBuffer: Buffer): Promise<string> 
       image_url: base64Image,
       enable_pbr: true,
       should_remesh: true,
-      should_generate_texture: true,
+      target_polycount: 30000,
+      target_formats: ['glb'],
     }),
   });
 

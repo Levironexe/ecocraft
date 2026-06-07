@@ -99,7 +99,7 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
             <span className={`text-[18px] block mb-[2px] ${
               msg.role === 'assistant' ? 'text-[var(--primary-dark)]' : 'text-[var(--accent)]'
             }`}>
-              {msg.role === 'assistant' ? '🤖 Trợ Lý' : '👦 Bạn'}
+              {msg.role === 'assistant' ? 'Trợ Lý' : 'Bạn'}
             </span>
             {msg.content}
           </div>

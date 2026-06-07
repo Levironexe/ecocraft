@@ -1,5 +1,5 @@
 import { createServiceClient } from './supabase';
-import { generateImage } from './gemini-image';
+import { generateImageBuffer } from './leonardo';
 import { createImageTo3DTask, pollMeshyTask, downloadGlb } from './meshy';
 import { SelectedItem } from './types';
 import { createHash } from 'crypto';
@@ -63,11 +63,14 @@ export async function generateAndStoreModel(
 
   onProgress?.({ stage: 'generating-image', message: 'Đang tạo hình ảnh tham khảo...' });
   const meshyPrompt = `Multi-view orthographic reference sheet. ${imagePrompt} Show: large isometric 3/4 hero shot, FRONT VIEW, SIDE VIEW, BACK VIEW, TOP VIEW. Dark grey background. Labeled views. Stylized cartoon game asset, bright vivid colors, clean low-poly aesthetic. Professional game asset turnaround reference sheet.`;
-  const imageBuffer = await generateImage(meshyPrompt);
+  const imageBuffer = await generateImageBuffer(meshyPrompt);
+  console.log(`[Pipeline] Leonardo image generated: ${imageBuffer.length} bytes`);
 
   onProgress?.({ stage: 'generating-3d', message: 'Đang tạo mô hình 3D... (2-5 phút)' });
   const taskId = await createImageTo3DTask(imageBuffer);
+  console.log(`[Pipeline] Meshy task created: ${taskId}`);
   const glbDownloadUrl = await pollMeshyTask(taskId);
+  console.log(`[Pipeline] Meshy GLB ready: ${glbDownloadUrl.slice(0, 80)}...`);
 
   onProgress?.({ stage: 'uploading', message: 'Đang lưu mô hình...' });
   const glbBuffer = await downloadGlb(glbDownloadUrl);

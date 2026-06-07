@@ -65,18 +65,20 @@ STEP RULES (CRITICAL):
   Step 3: "Xếp 5 cánh thành vòng tròn, dán đầu các cánh vào nhau bằng keo dán."
   Step 4: "Đợi keo khô khoảng 2 phút."
 
-IMAGE_PROMPT RULES (CRITICAL):
-- Must be in English, 3-5 sentences
+IMAGE_PROMPT RULES (CRITICAL — this prompt will be used to generate a multi-view 3D reference sheet):
+- Must be in English, one long detailed paragraph
+- Format: Multi-view orthographic reference sheet of the FINISHED craft product
 - Describe the EXACT finished product AFTER all steps are completed
-- Specify: overall shape, relative size, colors of each part, which material is at which position, how they are assembled/attached/tied together
-- End with: "children's recycled craft, product photography, white background, studio lighting"
-- GOOD EXAMPLE: "A small decorative flower vase about 15cm tall, made from an aluminum soda can with the top cut off and edges folded inward. The can body is wrapped with a wide pink ribbon tied in a bow at the front. Three paper flowers are inserted inside the can — each flower is made from 5 oval-shaped petals cut from a toilet paper roll, painted in yellow, orange and red. Green paper strips serve as stems and leaves. Children's recycled craft, product photography, white background, studio lighting."
-- BAD EXAMPLE: "Colorful craft made from recycled materials on white background" (too vague)
+- Include: overall shape, dimensions (cm), colors of EACH part, materials visible, how they connect
+- Must specify these views: "Show six views arranged on a clean dark grey background: large isometric 3/4 view in the top-left as the hero shot, then FRONT VIEW, LEFT SIDE VIEW, BACK VIEW, RIGHT SIDE VIEW in a row across the middle, and TOP VIEW in the lower section."
+- Must end with: "Each view labeled in clean white sans-serif text. Include simple dimension lines. Stylized cartoon game asset style, bright vivid saturated colors, soft studio lighting, clean low-poly aesthetic, consistent colors across all views. Professional game asset turnaround reference sheet layout."
+- GOOD EXAMPLE: "Multi-view orthographic reference sheet of a small decorative flower vase about 15cm tall, made from an aluminum soda can with the top cut off and edges folded inward smoothly. The can body is wrapped with a wide pink satin ribbon tied in a bow at the front center. Three paper flowers are inserted inside the can — each flower is made from 5 oval-shaped petals cut from a toilet paper roll, painted in bright yellow, warm orange and cherry red. Green paper strips serve as stems and leaves sticking upward. Show six views arranged on a clean dark grey background: large isometric 3/4 view in the top-left as the hero shot, then FRONT VIEW, LEFT SIDE VIEW, BACK VIEW, RIGHT SIDE VIEW in a row across the middle, and TOP VIEW showing flowers from above in the lower section. Each view labeled in clean white sans-serif text. Include simple dimension lines showing height and diameter. Stylized cartoon game asset style, bright vivid saturated colors, soft studio lighting, clean low-poly aesthetic, consistent colors across all views. Professional game asset turnaround reference sheet layout."
+- BAD EXAMPLE: "Colorful craft made from recycled materials on white background" (no views, no dimensions, no detail)
 
 CRITICAL: Return ONLY JSON. No text before or after. Start with { and end with }.
 
 If you can suggest:
-{"canSuggest": true, "name": "Vietnamese name", "emoji": "emoji", "description": "short Vietnamese description", "steps": [{"number": 1, "title": "short Vietnamese title", "detail": "detailed Vietnamese instructions 2-3 sentences explaining exactly how to do it"}, ...], "image_prompt": "3-5 sentence DETAILED English description of the EXACT finished product based on the steps, specifying shape, size, colors, material positions, assembly method, ending with: children's recycled craft, product photography, white background, studio lighting"}
+{"canSuggest": true, "name": "Vietnamese name", "emoji": "emoji", "description": "short Vietnamese description", "steps": [{"number": 1, "title": "short Vietnamese title", "detail": "detailed Vietnamese instructions 2-3 sentences explaining exactly how to do it"}, ...], "image_prompt": "Multi-view orthographic reference sheet of [DETAILED description of finished craft with dimensions, colors, materials, assembly]. Show six views arranged on a clean dark grey background: large isometric 3/4 view in the top-left as the hero shot, then FRONT VIEW, LEFT SIDE VIEW, BACK VIEW, RIGHT SIDE VIEW in a row across the middle, and TOP VIEW in the lower section. Each view labeled in clean white sans-serif text. Include simple dimension lines. Stylized cartoon game asset style, bright vivid saturated colors, soft studio lighting, clean low-poly aesthetic, consistent colors across all views. Professional game asset turnaround reference sheet layout."}
 
 If you cannot:
 {"canSuggest": false, "message": "Mình chưa nghĩ ra cách làm hay với những thứ này. Bạn thử thêm vật liệu khác xem sao nhé!"}
