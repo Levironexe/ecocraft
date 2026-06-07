@@ -5,22 +5,26 @@ import { useAuth } from '../AuthProvider';
 import { createBrowserClient } from '../../lib/supabase';
 import { PixelBox } from '../ui/PixelBox';
 import { PixelButton } from '../ui/PixelButton';
+import { Craft } from '../../lib/types';
 
 interface CraftHistoryItem {
   id: string;
   craft_name: string;
   craft_description: string | null;
+  materials: { materialId: string; quantity: number }[];
   status: 'completed' | 'generating' | 'in-progress';
   created_at: string;
   glb_storage_path: string;
+  glbUrl: string;
+  refImageUrl: string;
 }
 
 interface CraftHistoryProps {
   onBack: () => void;
-  onLoadCraft?: (craftName: string) => void;
+  onSelectCraft: (craft: Craft, glbUrl: string, refImageUrl?: string) => void;
 }
 
-export function CraftHistory({ onBack }: CraftHistoryProps) {
+export function CraftHistory({ onBack, onSelectCraft }: CraftHistoryProps) {
   const { user } = useAuth();
   const [items, setItems] = useState<CraftHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,21 +33,28 @@ export function CraftHistory({ onBack }: CraftHistoryProps) {
     async function load() {
       const supabase = createBrowserClient();
 
-      // Get generated models (these are completed 3D generations)
       const { data: models } = await supabase
         .from('generated_models')
-        .select('id, craft_name, craft_description, glb_storage_path, created_at')
+        .select('id, craft_name, craft_description, materials, glb_storage_path, created_at')
         .order('created_at', { ascending: false })
         .limit(20);
 
-      const historyItems: CraftHistoryItem[] = (models || []).map((m) => ({
-        id: m.id,
-        craft_name: m.craft_name,
-        craft_description: m.craft_description,
-        status: 'completed' as const,
-        created_at: m.created_at,
-        glb_storage_path: m.glb_storage_path,
-      }));
+      const historyItems: CraftHistoryItem[] = (models || []).map((m) => {
+        const { data: glbData } = supabase.storage.from('models').getPublicUrl(m.glb_storage_path);
+        const refPath = m.glb_storage_path.replace('.glb', '-ref.png');
+        const { data: refData } = supabase.storage.from('models').getPublicUrl(refPath);
+        return {
+          id: m.id,
+          craft_name: m.craft_name,
+          craft_description: m.craft_description,
+          materials: m.materials || [],
+          status: 'completed' as const,
+          created_at: m.created_at,
+          glb_storage_path: m.glb_storage_path,
+          glbUrl: glbData.publicUrl,
+          refImageUrl: refData.publicUrl,
+        };
+      });
 
       setItems(historyItems);
       setLoading(false);
@@ -51,6 +62,24 @@ export function CraftHistory({ onBack }: CraftHistoryProps) {
 
     load();
   }, [user.id]);
+
+  const handleClick = (item: CraftHistoryItem) => {
+    const craft: Craft = {
+      id: `history-${item.id}`,
+      name: item.craft_name,
+      emoji: '📜',
+      description: item.craft_description || '',
+      difficulty: 1,
+      ageMin: 6,
+      timeMinutes: 20,
+      materials: item.materials.map((m) => ({ materialId: m.materialId, quantity: m.quantity })),
+      tools: [],
+      steps: [{ number: 1, title: 'Đã hoàn thành', detail: 'Sản phẩm này đã được chế tạo trước đó.' }],
+      modelPath: null,
+      isShowcase: false,
+    };
+    onSelectCraft(craft, item.glbUrl, item.refImageUrl);
+  };
 
   const statusConfig = {
     completed: { label: 'Hoàn thành', color: 'bg-green-500' },
@@ -89,20 +118,26 @@ export function CraftHistory({ onBack }: CraftHistoryProps) {
             });
 
             return (
-              <PixelBox key={item.id} className="p-[12px]">
-                <div className="flex items-center gap-[12px]">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[22px] text-[var(--text)]">{item.craft_name}</div>
-                    {item.craft_description && (
-                      <div className="text-[18px] text-[var(--text-light)] truncate">{item.craft_description}</div>
-                    )}
-                    <div className="text-[16px] text-[var(--text-muted)] mt-[2px]">{date}</div>
+              <button
+                key={item.id}
+                onClick={() => handleClick(item)}
+                className="text-left cursor-pointer transition-all hover:scale-[1.01]"
+              >
+                <PixelBox className="p-[12px]">
+                  <div className="flex items-center gap-[12px]">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[22px] text-[var(--text)]">{item.craft_name}</div>
+                      {item.craft_description && (
+                        <div className="text-[18px] text-[var(--text-light)] truncate">{item.craft_description}</div>
+                      )}
+                      <div className="text-[16px] text-[var(--text-muted)] mt-[2px]">{date}</div>
+                    </div>
+                    <span className={`${status.color} text-black px-[10px] py-[4px] text-[16px] shrink-0`}>
+                      {status.label}
+                    </span>
                   </div>
-                  <span className={`${status.color} text-white px-[10px] py-[4px] text-[16px]`}>
-                    {status.label}
-                  </span>
-                </div>
-              </PixelBox>
+                </PixelBox>
+              </button>
             );
           })}
         </div>

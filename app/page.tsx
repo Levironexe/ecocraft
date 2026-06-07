@@ -197,7 +197,17 @@ export default function Home() {
               />
             </div>
           ) : (
-            <CraftHistory onBack={() => setShowHistory(false)} />
+            <CraftHistory
+              onBack={() => setShowHistory(false)}
+              onSelectCraft={(craft, glbUrl, refImageUrl) => {
+                setSelectedCraft(craft);
+                setImageCache((prev) => ({ ...prev, [craft.id]: glbUrl }));
+                if (refImageUrl) {
+                  setImageCache((prev) => ({ ...prev, [`${craft.id}-ref`]: refImageUrl }));
+                }
+                setShowHistory(false);
+              }}
+            />
           )}
         </div>
       </div>
