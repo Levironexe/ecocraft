@@ -11,6 +11,7 @@ import { ScreenTabs } from './components/ScreenTabs';
 import { MaterialScreen } from './components/screen1/MaterialScreen';
 import { SuggestionCards } from './components/screen1/SuggestionCards';
 import { BuildScreen } from './components/screen2/BuildScreen';
+import { CraftHistory } from './components/screen2/CraftHistory';
 
 const LLM_CONFIG_KEY = 'ecocraft-llm-config';
 const DEFAULT_CONFIG: LLMConfig = { provider: 'groq' };
@@ -18,6 +19,7 @@ const DEFAULT_CONFIG: LLMConfig = { provider: 'groq' };
 export default function Home() {
   const { user } = useAuth();
   const [activeScreen, setActiveScreen] = useState<1 | 2>(1);
+  const [showHistory, setShowHistory] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [selectedCraft, setSelectedCraft] = useState<Craft | null>(null);
@@ -111,6 +113,7 @@ export default function Home() {
 
   const handleSelectCraft = (craft: Craft) => {
     setSelectedCraft(craft);
+    setShowHistory(false);
     setActiveScreen(2);
   };
 
@@ -143,6 +146,7 @@ export default function Home() {
       if (data.craft) {
         setSelectedCraft(data.craft);
         setAiSuggestion(data.craft);
+        setShowHistory(false);
         setActiveScreen(2);
       }
     } catch { /* error handled silently */ }
@@ -153,45 +157,50 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <HUD llmConfig={llmConfig} onConfigChange={handleConfigChange} gameStats={gameStats} />
       <ScreenTabs activeScreen={activeScreen} onTabChange={setActiveScreen} />
-      {activeScreen === 1 ? (
-        <>
-          <div className="flex-1 mx-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
-            <MaterialScreen
-              selectedMaterial={selectedMaterial}
-              selectedItems={selectedItems}
-              onSelectMaterial={setSelectedMaterial}
-              onAddItem={handleAddItem}
-              onAddItems={handleAddItems}
-              onRemoveItem={handleRemoveItem}
-              onCraft={handleCraft}
-              craftLoading={craftLoading}
-              llmConfig={llmConfig}
-              onUpdateSuggestions={handleUpdateSuggestions}
-            />
-          </div>
-          <SuggestionCards
-            suggestions={allSuggestions}
-            aiSuggestion={aiSuggestion}
-            onSelectCraft={handleSelectCraft}
-          />
-        </>
-      ) : selectedCraft ? (
-        <div className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
-          <BuildScreen
-            craft={selectedCraft}
+      {/* Screen 1 — always mounted, hidden when inactive */}
+      <div style={{ display: activeScreen === 1 ? 'contents' : 'none' }}>
+        <div className="flex-1 mx-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
+          <MaterialScreen
+            selectedMaterial={selectedMaterial}
             selectedItems={selectedItems}
+            onSelectMaterial={setSelectedMaterial}
+            onAddItem={handleAddItem}
+            onAddItems={handleAddItems}
+            onRemoveItem={handleRemoveItem}
+            onCraft={handleCraft}
+            craftLoading={craftLoading}
             llmConfig={llmConfig}
-            onCraftComplete={handleCraftComplete}
-            onCoachMessage={handleCoachMessage}
-            imageCache={imageCache}
-            onImageGenerated={(craftId, url) => setImageCache((prev) => ({ ...prev, [craftId]: url }))}
+            onUpdateSuggestions={handleUpdateSuggestions}
           />
         </div>
-      ) : (
-        <div className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)] flex items-center justify-center h-[400px] text-[var(--text-muted)] text-[24px] screen-enter">
-          🔨 Chọn sản phẩm để bắt đầu chế tạo!
+        <SuggestionCards
+          suggestions={allSuggestions}
+          aiSuggestion={aiSuggestion}
+          onSelectCraft={handleSelectCraft}
+        />
+      </div>
+
+      {/* Screen 2 */}
+      <div style={{ display: activeScreen === 2 ? 'contents' : 'none' }}>
+        <div className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
+          {selectedCraft && !showHistory ? (
+            <div className="flex flex-col h-full">
+              <BuildScreen
+                craft={selectedCraft}
+                selectedItems={selectedItems}
+                llmConfig={llmConfig}
+                onCraftComplete={handleCraftComplete}
+                onCoachMessage={handleCoachMessage}
+                imageCache={imageCache}
+                onImageGenerated={(craftId, url) => setImageCache((prev) => ({ ...prev, [craftId]: url }))}
+                onShowHistory={() => setShowHistory(true)}
+              />
+            </div>
+          ) : (
+            <CraftHistory onBack={() => setShowHistory(false)} />
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

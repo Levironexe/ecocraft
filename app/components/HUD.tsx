@@ -14,6 +14,7 @@ interface HUDProps {
 export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
   const { user, logout } = useAuth();
   const [showSettings, setShowSettings] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   return (
     <>
@@ -52,7 +53,7 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
             ⚙️
           </button>
           <button
-            onClick={logout}
+            onClick={() => setShowLogoutConfirm(true)}
             className="text-[18px] text-white/70 hover:text-white cursor-pointer bg-transparent border-none"
             title={user.email}
           >
@@ -68,6 +69,31 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
           onConfigChange={onConfigChange}
           gameStats={gameStats}
         />
+      )}
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowLogoutConfirm(false)} />
+          <div className="pixel-box relative z-10 p-[24px] w-[340px] text-center">
+            <div className="text-[32px] mb-[8px]">🚪</div>
+            <div className="text-[22px] text-[var(--text)] mb-[4px]">Đăng xuất?</div>
+            <div className="text-[18px] text-[var(--text-light)] mb-[16px]">Bạn có chắc muốn đăng xuất không?</div>
+            <div className="flex gap-[10px]">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="pixel-btn pixel-btn-ghost flex-1"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={() => { setShowLogoutConfirm(false); logout(); }}
+                className="pixel-btn pixel-btn-accent flex-1"
+              >
+                Đăng xuất
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

@@ -10,6 +10,7 @@ const toolModels: Record<string, string> = {
   'Bút lông': '/models/but-long.glb',
   'Sơn': '/models/son.glb',
   'Băng keo': '/models/bang-keo.glb',
+  'Búa nhỏ': '/models/bua-nho.glb',
 };
 
 interface MaterialsBarProps {

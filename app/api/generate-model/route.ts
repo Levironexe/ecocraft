@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     const cached = await checkModelCache(selectedItems);
     if (cached) {
-      return Response.json({ glbUrl: cached.glbUrl, fromCache: true });
+      return Response.json({ glbUrl: cached.glbUrl, referenceImageUrl: cached.referenceImageUrl, fromCache: true });
     }
 
     const result = await generateAndStoreModel(
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     const cached = await checkModelCache(selectedItems);
 
     if (cached) {
-      return Response.json({ glbUrl: cached.glbUrl, fromCache: true });
+      return Response.json({ glbUrl: cached.glbUrl, referenceImageUrl: cached.referenceImageUrl, fromCache: true });
     }
 
     return Response.json({ glbUrl: null, fromCache: false });

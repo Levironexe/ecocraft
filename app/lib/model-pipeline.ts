@@ -14,6 +14,7 @@ function hashMaterialCombo(items: SelectedItem[]): string {
 
 export interface PipelineResult {
   glbUrl: string;
+  referenceImageUrl?: string;
   fromCache: boolean;
 }
 
@@ -24,7 +25,7 @@ export interface PipelineProgress {
 
 export async function checkModelCache(
   selectedItems: SelectedItem[]
-): Promise<{ glbUrl: string } | null> {
+): Promise<{ glbUrl: string; referenceImageUrl?: string } | null> {
   const hash = hashMaterialCombo(selectedItems);
   const supabase = createServiceClient();
 
@@ -38,7 +39,11 @@ export async function checkModelCache(
     const { data: urlData } = supabase.storage
       .from('models')
       .getPublicUrl(data.glb_storage_path);
-    return { glbUrl: urlData.publicUrl };
+    const refPath = data.glb_storage_path.replace('.glb', '-ref.png');
+    const { data: refUrlData } = supabase.storage
+      .from('models')
+      .getPublicUrl(refPath);
+    return { glbUrl: urlData.publicUrl, referenceImageUrl: refUrlData?.publicUrl };
   }
 
   return null;
@@ -73,6 +78,14 @@ export async function generateAndStoreModel(
   const glbDownloadUrl = await pollMeshyTask(taskId);
   console.log(`[Pipeline] Meshy GLB ready: ${glbDownloadUrl.slice(0, 80)}...`);
 
+  // Upload reference image to Supabase
+  const refImagePath = `generated/${hash}-ref.png`;
+  await supabase.storage
+    .from('models')
+    .upload(refImagePath, imageBuffer, { contentType: 'image/png', upsert: true })
+    .catch(() => {});
+  const { data: refImageUrlData } = supabase.storage.from('models').getPublicUrl(refImagePath);
+
   onProgress?.({ stage: 'uploading', message: 'Đang lưu mô hình...' });
   const glbBuffer = await downloadGlb(glbDownloadUrl);
   const storagePath = `generated/${hash}.glb`;
@@ -106,5 +119,5 @@ export async function generateAndStoreModel(
     .getPublicUrl(storagePath);
 
   onProgress?.({ stage: 'done', message: 'Mô hình 3D hoàn tất!' });
-  return { glbUrl: urlData.publicUrl, fromCache: false };
+  return { glbUrl: urlData.publicUrl, referenceImageUrl: refImageUrlData?.publicUrl, fromCache: false };
 }

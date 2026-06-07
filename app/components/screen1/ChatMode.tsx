@@ -122,7 +122,7 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
           <div className="self-start p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
             <div className="text-[19px] mb-[6px]">Thêm vào túi?</div>
             <PixelButton variant="primary" onClick={handleAddPending}>
-              ✅ Thêm {pendingItems.length} vật liệu
+              Thêm {pendingItems.length} vật liệu
             </PixelButton>
           </div>
         )}

@@ -44,10 +44,10 @@ export function StepsList({ steps, completedSteps, onToggleStep }: StepsListProp
                 {isDone ? '✓' : step.number}
               </div>
               <div className="flex-1 min-w-0">
-                <div className={`text-[18px] ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text)]'}`}>
+                <div className={`text-[26px] ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text)]'}`}>
                   {step.title}
                 </div>
-                <div className={`text-[19px] mt-[2px] ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-light)]'}`}>
+                <div className={`text-[23px] mt-[2px] ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-light)]'}`}>
                   {step.detail}
                 </div>
                 {step.tip && (

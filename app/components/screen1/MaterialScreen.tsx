@@ -57,19 +57,20 @@ export function MaterialScreen({
             </button>
           </div>
         </div>
-        {mode === 'inventory' ? (
+        <div style={{ display: mode === 'inventory' ? 'flex' : 'none' }} className="flex-col flex-1 min-h-0">
           <InventoryGrid
             selectedMaterialId={selectedMaterial?.id ?? null}
             onSelect={onSelectMaterial}
           />
-        ) : (
+        </div>
+        <div style={{ display: mode === 'chat' ? 'flex' : 'none' }} className="flex-col flex-1 min-h-0">
           <ChatMode
             selectedItems={selectedItems}
             llmConfig={llmConfig}
             onAddItems={onAddItems}
             onUpdateSuggestions={onUpdateSuggestions}
           />
-        )}
+        </div>
       </div>
       <div className="p-[14px] flex flex-col overflow-y-auto">
         <ItemPreview material={selectedMaterial} onAdd={onAddItem} />

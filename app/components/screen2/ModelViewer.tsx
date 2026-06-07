@@ -18,11 +18,14 @@ function craftKey(craft: { materials: { materialId: string; quantity: number }[]
 }
 
 type PipelineStage = 'idle' | 'generating-3d' | 'done' | 'error';
+type ViewMode = '3d' | 'image';
 
 export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelViewerProps) {
   const [glbUrl, setGlbUrl] = useState<string | null>(null);
+  const [refImageUrl, setRefImageUrl] = useState<string | null>(null);
   const [stage, setStage] = useState<PipelineStage>('idle');
   const [stageMessage, setStageMessage] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('3d');
   const craftIdRef = useRef(craft.id);
 
   useEffect(() => {
@@ -34,11 +37,12 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
   useEffect(() => {
     craftIdRef.current = craft.id;
     setGlbUrl(null);
+    setRefImageUrl(null);
     setStage('idle');
     setStageMessage('');
+    setViewMode('3d');
 
     if (cachedImageUrl) {
-      // cachedImageUrl is actually the cached glbUrl from page state
       setGlbUrl(cachedImageUrl);
       setStage('done');
       return;
@@ -87,6 +91,9 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
           setStage('error');
           setStageMessage('Không tạo được mô hình 3D');
         }
+        if (data.referenceImageUrl) {
+          setRefImageUrl(data.referenceImageUrl);
+        }
       })
       .catch(() => {
         inFlightRequests.delete(key);
@@ -96,23 +103,58 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [craft.id, cachedImageUrl]);
 
-  // GLB ready — show 3D model
+  // GLB ready — show with toggle
   if (glbUrl) {
     return (
-      <div className="flex-1 relative">
-        <model-viewer
-          src={glbUrl}
-          auto-rotate
-          rotation-per-second="36deg"
-          camera-controls
-          shadow-intensity="1"
-          style={{ width: '100%', height: '100%' }}
-        />
-        {craft.id.startsWith('ai-suggestion-') && (
-          <div className="absolute bottom-[8px] left-[8px] text-[18px] text-[var(--text-muted)] bg-[var(--bg-card)] px-[8px] py-[2px]">
-            🤖 Mô hình AI
+      <div className="flex-1 relative flex flex-col">
+        {/* Toggle buttons */}
+        {refImageUrl && (
+          <div className="flex gap-0 shrink-0">
+            <button
+              onClick={() => setViewMode('3d')}
+              className={`flex-1 py-[4px] text-[18px] cursor-pointer transition-all border-b-[2px] border-solid ${
+                viewMode === '3d'
+                  ? 'bg-[var(--primary)] text-white border-[var(--primary-dark)]'
+                  : 'bg-[var(--bg-warm)] text-[var(--text-light)] border-[var(--border)] hover:bg-[var(--bg-card)]'
+              }`}
+            >
+              🧊 Mô hình 3D
+            </button>
+            <button
+              onClick={() => setViewMode('image')}
+              className={`flex-1 py-[4px] text-[18px] cursor-pointer transition-all border-b-[2px] border-solid ${
+                viewMode === 'image'
+                  ? 'bg-[var(--primary)] text-white border-[var(--primary-dark)]'
+                  : 'bg-[var(--bg-warm)] text-[var(--text-light)] border-[var(--border)] hover:bg-[var(--bg-card)]'
+              }`}
+            >
+              🖼️ Hình tham khảo
+            </button>
           </div>
         )}
+
+        {/* Content */}
+        <div className="flex-1 relative min-h-0">
+          {viewMode === '3d' ? (
+            <model-viewer
+              src={glbUrl}
+              auto-rotate
+              rotation-per-second="36deg"
+              camera-controls
+              shadow-intensity="1"
+              style={{ width: '100%', height: '100%' }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center overflow-auto bg-[var(--bg-warm)]">
+              <img src={refImageUrl!} alt="Reference" className="max-w-full max-h-full object-contain" />
+            </div>
+          )}
+          {craft.id.startsWith('ai-suggestion-') && viewMode === '3d' && (
+            <div className="absolute bottom-[8px] left-[8px] text-[18px] text-[var(--text-muted)] bg-[var(--bg-card)] px-[8px] py-[2px]">
+              🤖 Mô hình AI
+            </div>
+          )}
+        </div>
       </div>
     );
   }
