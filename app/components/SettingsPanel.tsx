@@ -12,7 +12,7 @@ interface SettingsPanelProps {
 }
 
 export function SettingsPanel({ onClose, llmConfig, onConfigChange, gameStats }: SettingsPanelProps) {
-  const { themeId, setTheme } = useTheme();
+  const { themeId, setTheme, fontId, setFont, fontOptions } = useTheme();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -40,6 +40,26 @@ export function SettingsPanel({ onClose, llmConfig, onConfigChange, gameStats }:
                 style={{ background: `linear-gradient(135deg, ${t.primary} 50%, ${t.accent} 50%)` }}
               />
               <span className="text-[20px]">{t.name}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="text-[18px] text-[var(--text-light)] mb-[10px]">Phông chữ</div>
+        <div className="flex flex-col gap-[8px] mb-[16px]">
+          {fontOptions.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFont(f.id)}
+              className={`flex items-center gap-[8px] p-[8px] border-[2px] border-solid cursor-pointer transition-all ${
+                fontId === f.id
+                  ? 'border-[var(--primary)] bg-[var(--primary-light)]'
+                  : 'border-[var(--border)] bg-[var(--bg-warm)] hover:border-[var(--primary)]'
+              }`}
+            >
+              <span className="text-[20px]" style={{ fontFamily: f.id === 'vt323' ? 'var(--font-vt323)' : 'var(--font-grandstander)' }}>
+                Aa Ắ Ồ
+              </span>
+              <span className="text-[18px]">{f.name}</span>
             </button>
           ))}
         </div>

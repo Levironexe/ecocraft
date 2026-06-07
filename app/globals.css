@@ -29,16 +29,16 @@
 
   body {
     background: var(--bg);
-    font-family: var(--font-vt323), 'VT323', monospace;
+    font-family: var(--active-font, var(--font-grandstander)), 'Grandstander', sans-serif;
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
-    font-size: 26px;
+    font-size: 22px;
     line-height: 1.4;
   }
 
   input, select {
-    font-family: var(--font-vt323), 'VT323', monospace;
+    font-family: inherit;
     font-size: 18px;
   }
 }
@@ -59,7 +59,7 @@
   }
 
   .pixel-btn {
-    font-family: var(--font-vt323), 'VT323', monospace;
+    font-family: inherit;
     font-size: 20px;
     padding: 8px 16px;
     border: var(--pixel) solid var(--border-dark);

@@ -30,6 +30,10 @@ export function InventoryGrid({ selectedMaterialId, onSelect }: InventoryGridPro
     return removeDiacritics(m.name).includes(removeDiacritics(search));
   });
 
+  const handleClick = (m: Material) => {
+    onSelect(m);
+  };
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex gap-0 mb-[10px]">
@@ -50,7 +54,7 @@ export function InventoryGrid({ selectedMaterialId, onSelect }: InventoryGridPro
           filtered.map((m) => (
             <button
               key={m.id}
-              onClick={() => onSelect(m)}
+              onClick={() => handleClick(m)}
               className={`border-[var(--pixel)] border-solid flex flex-col items-center justify-center cursor-pointer transition-all relative p-[4px] overflow-hidden ${
                 selectedMaterialId === m.id
                   ? 'border-[var(--primary-dark)] bg-[var(--primary-light)] shadow-[0_0_0_2px_var(--primary)_inset]'
@@ -88,6 +92,7 @@ export function InventoryGrid({ selectedMaterialId, onSelect }: InventoryGridPro
           ))
         )}
       </div>
+
     </div>
   );
 }

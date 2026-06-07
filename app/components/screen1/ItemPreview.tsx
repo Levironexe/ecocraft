@@ -5,6 +5,7 @@ import { Material, SelectedItem } from '../../lib/types';
 import { PixelBox } from '../ui/PixelBox';
 import { PixelButton } from '../ui/PixelButton';
 import { QuantityControl } from '../ui/QuantityControl';
+import { MaterialModal } from './MaterialModal';
 
 interface ItemPreviewProps {
   material: Material | null;
@@ -14,6 +15,7 @@ interface ItemPreviewProps {
 export function ItemPreview({ material, onAdd }: ItemPreviewProps) {
   const [size, setSize] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     import('@google/model-viewer');
@@ -67,9 +69,18 @@ export function ItemPreview({ material, onAdd }: ItemPreviewProps) {
         </select>
         <QuantityControl value={quantity} onChange={setQuantity} />
       </div>
-      <PixelButton variant="accent" fullWidth onClick={handleAdd}>
-        ➕ Thêm vào túi
-      </PixelButton>
+      <div className="flex gap-[8px]">
+        <PixelButton variant="ghost" onClick={() => setShowModal(true)}>
+          🔍 Xem chi tiết
+        </PixelButton>
+        <PixelButton variant="accent" fullWidth onClick={handleAdd}>
+          ➕ Thêm vào túi
+        </PixelButton>
+      </div>
+
+      {showModal && (
+        <MaterialModal material={material} onClose={() => setShowModal(false)} />
+      )}
     </PixelBox>
   );
 }

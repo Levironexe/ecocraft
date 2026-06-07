@@ -6,7 +6,8 @@ import { Craft } from './types';
 
 export function useGameStats() {
   const { user } = useAuth();
-  const { gameStats, setGameStats } = useAppStore();
+  const gameStats = useAppStore((s) => s.gameStats);
+  const setGameStats = useAppStore((s) => s.setGameStats);
 
   const loadStats = useCallback(async () => {
     const stats = await getStats(user.id);
@@ -29,29 +30,28 @@ export function useGameStats() {
 }
 
 export function useCraftActions() {
-  const store = useAppStore();
+  const selectCraft = useAppStore((s) => s.selectCraft);
+  const setCraftLoading = useAppStore((s) => s.setCraftLoading);
+  const setAiSuggestion = useAppStore((s) => s.setAiSuggestion);
 
   const handleCraft = useCallback(async () => {
-    const { selectedItems, llmConfig } = store;
-    const allSuggestions = useAppStore.getState().aiMatchedCrafts.length > 0
-      ? useAppStore.getState().aiMatchedCrafts
-      : [];
+    const { selectedItems, llmConfig, aiMatchedCrafts, aiSuggestion } = useAppStore.getState();
+    const allSuggestions = aiMatchedCrafts.length > 0 ? aiMatchedCrafts : [];
 
     const highMatch = allSuggestions.find((s) => s.matchPercent >= 70);
     if (highMatch) {
-      store.selectCraft(highMatch.craft);
+      selectCraft(highMatch.craft);
       return;
     }
 
-    const aiSug = useAppStore.getState().aiSuggestion;
-    if (aiSug) {
-      store.selectCraft(aiSug);
+    if (aiSuggestion) {
+      selectCraft(aiSuggestion);
       return;
     }
 
     if (selectedItems.length === 0) return;
 
-    store.setCraftLoading(true);
+    setCraftLoading(true);
     try {
       const res = await fetch('/api/craft', {
         method: 'POST',
@@ -60,12 +60,12 @@ export function useCraftActions() {
       });
       const data = await res.json();
       if (data.craft) {
-        store.setAiSuggestion(data.craft);
-        store.selectCraft(data.craft);
+        setAiSuggestion(data.craft);
+        selectCraft(data.craft);
       }
     } catch { /* silent */ }
-    finally { store.setCraftLoading(false); }
-  }, [store]);
+    finally { setCraftLoading(false); }
+  }, [selectCraft, setCraftLoading, setAiSuggestion]);
 
   return { handleCraft };
 }

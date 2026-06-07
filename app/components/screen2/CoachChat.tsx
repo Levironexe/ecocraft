@@ -64,7 +64,7 @@ export function CoachChat({ craft, currentStep, llmConfig, onCoachMessage }: Coa
     <div className="flex flex-col h-full p-[8px]">
       <div className="flex items-center gap-[10px] mb-[8px] p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
         <div className="w-[40px] h-[40px] bg-[var(--primary)] border-[var(--pixel)] border-solid border-[var(--primary-dark)] flex items-center justify-center text-[20px]">
-
+          🔧
         </div>
         <div>
           <div className="text-[20px] text-[var(--primary-dark)]">Thợ Cả</div>

@@ -5,6 +5,7 @@ export interface Material {
   modelPath: string | null;
   sizeOptions: string[];
   category: 'plastic' | 'paper' | 'metal' | 'fabric' | 'wood' | 'glass' | 'other';
+  funFact?: string;
 }
 
 export interface CraftMaterial {

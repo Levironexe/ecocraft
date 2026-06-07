@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Craft } from '../../lib/types';
 import { materials } from '../../lib/materials';
 import { PixelBox } from '../ui/PixelBox';
@@ -26,7 +26,43 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
   const [stage, setStage] = useState<PipelineStage>('idle');
   const [stageMessage, setStageMessage] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('3d');
+  const [progress, setProgress] = useState(0);
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const craftIdRef = useRef(craft.id);
+
+  const startProgressTimer = useCallback(() => {
+    setProgress(0);
+    if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+
+    const stages = [
+      { at: 0, pct: 3, msg: 'Đang tải hình tham khảo...' },
+      { at: 5000, pct: 10, msg: 'Đang tạo hình ảnh...' },
+      { at: 20000, pct: 25, msg: 'Đang gửi đến Meshy...' },
+      { at: 30000, pct: 35, msg: 'Đang tạo mô hình 3D...' },
+      { at: 60000, pct: 50, msg: 'Đang tạo mô hình 3D...' },
+      { at: 120000, pct: 70, msg: 'Gần xong rồi...' },
+      { at: 180000, pct: 85, msg: 'Đang hoàn thiện...' },
+      { at: 240000, pct: 92, msg: 'Đang lưu mô hình...' },
+    ];
+
+    const start = Date.now();
+    progressTimerRef.current = setInterval(() => {
+      const elapsed = Date.now() - start;
+      let currentStage = stages[0];
+      for (const s of stages) {
+        if (elapsed >= s.at) currentStage = s;
+      }
+      setProgress(currentStage.pct);
+      setStageMessage(currentStage.msg);
+    }, 1000);
+  }, []);
+
+  const stopProgressTimer = useCallback(() => {
+    if (progressTimerRef.current) {
+      clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     if (glbUrl) {
@@ -54,7 +90,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
     inFlightRequests.add(key);
 
     setStage('generating-3d');
-    setStageMessage('Đang tạo mô hình 3D... (2-5 phút)');
+    startProgressTimer();
 
     const materialNames = craft.materials
       .map((cm) => materials.find((m) => m.id === cm.materialId)?.name)
@@ -83,7 +119,9 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
       .then((data) => {
         inFlightRequests.delete(key);
         if (craftIdRef.current !== craft.id) return;
+        stopProgressTimer();
         if (data.glbUrl) {
+          setProgress(100);
           setGlbUrl(data.glbUrl);
           setStage('done');
           setStageMessage(data.fromCache ? 'Mô hình từ kho!' : 'Mô hình 3D hoàn tất!');
@@ -97,6 +135,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
         }
       })
       .catch(() => {
+        stopProgressTimer();
         inFlightRequests.delete(key);
         if (craftIdRef.current !== craft.id) return;
         setStage('error');
@@ -162,18 +201,37 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
 
   // Generating or error
   return (
-    <PixelBox className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
-      <div className="text-center text-[var(--text-muted)]">
-        <div className="text-[20px]">{stageMessage || craft.name}</div>
+    <PixelBox className="flex-1 flex flex-col items-center justify-center overflow-hidden relative p-[24px]">
+      <div className="w-full max-w-[400px]">
+        <div className="text-center mb-[16px]">
+          <div className="text-[24px] text-[var(--text)] mb-[4px]">{craft.name}</div>
+          <div className="text-[18px] text-[var(--text-light)]">{stageMessage || 'Đang chuẩn bị...'}</div>
+        </div>
+
         {stage === 'generating-3d' && (
-          <div className="text-[18px] mt-[4px]">Bạn có thể làm theo hướng dẫn trong khi chờ</div>
+          <>
+            <div className="w-full h-[24px] bg-[var(--bg-warm)] border-[2px] border-solid border-[var(--border-dark)] overflow-hidden mb-[8px]">
+              <div
+                className="h-full transition-all duration-1000 ease-out"
+                style={{
+                  width: `${progress}%`,
+                  background: 'linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%)',
+                }}
+              />
+            </div>
+            <div className="flex justify-between text-[16px] text-[var(--text-muted)]">
+              <span>{progress}%</span>
+              <span>Bạn có thể làm theo hướng dẫn trong khi chờ</span>
+            </div>
+          </>
+        )}
+
+        {stage === 'error' && (
+          <div className="text-center text-[18px] text-[var(--accent)] mt-[8px]">
+            Không tạo được mô hình 3D
+          </div>
         )}
       </div>
-      {stage === 'error' && (
-        <div className="absolute bottom-[8px] text-[18px] text-[var(--accent)]">
-          Không tạo được mô hình 3D
-        </div>
-      )}
     </PixelBox>
   );
 }

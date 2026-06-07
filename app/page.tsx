@@ -15,77 +15,99 @@ const LLM_CONFIG_KEY = 'ecocraft-llm-config';
 
 export default function Home() {
   const { user } = useAuth();
-  const store = useAppStore();
   const allSuggestions = useAllSuggestions();
   const { gameStats, loadStats, handleCraftComplete, handleCoachMessage } = useGameStats();
   const { handleCraft } = useCraftActions();
 
+  const activeScreen = useAppStore((s) => s.activeScreen);
+  const setActiveScreen = useAppStore((s) => s.setActiveScreen);
+  const showHistory = useAppStore((s) => s.showHistory);
+  const setShowHistory = useAppStore((s) => s.setShowHistory);
+  const selectedMaterial = useAppStore((s) => s.selectedMaterial);
+  const setSelectedMaterial = useAppStore((s) => s.setSelectedMaterial);
+  const selectedItems = useAppStore((s) => s.selectedItems);
+  const addItem = useAppStore((s) => s.addItem);
+  const addItems = useAppStore((s) => s.addItems);
+  const removeItem = useAppStore((s) => s.removeItem);
+  const selectedCraft = useAppStore((s) => s.selectedCraft);
+  const selectCraft = useAppStore((s) => s.selectCraft);
+  const selectCraftFromHistory = useAppStore((s) => s.selectCraftFromHistory);
+  const llmConfig = useAppStore((s) => s.llmConfig);
+  const setLlmConfig = useAppStore((s) => s.setLlmConfig);
+  const imageCache = useAppStore((s) => s.imageCache);
+  const setImageCache = useAppStore((s) => s.setImageCache);
+  const craftLoading = useAppStore((s) => s.craftLoading);
+  const aiSuggestion = useAppStore((s) => s.aiSuggestion);
+  const setAiSuggestion = useAppStore((s) => s.setAiSuggestion);
+  const setAiMatchedCrafts = useAppStore((s) => s.setAiMatchedCrafts);
+  const setUserId = useAppStore((s) => s.setUserId);
+
   useEffect(() => {
-    store.setUserId(user.id);
+    setUserId(user.id);
     loadStats();
     try {
       const saved = localStorage.getItem(LLM_CONFIG_KEY);
-      if (saved) store.setLlmConfig(JSON.parse(saved));
+      if (saved) setLlmConfig(JSON.parse(saved));
     } catch {}
-  }, [user.id, loadStats, store]);
+  }, [user.id, loadStats, setUserId, setLlmConfig]);
 
-  const handleConfigChange = (config: typeof store.llmConfig) => {
-    store.setLlmConfig(config);
+  const handleConfigChange = (config: typeof llmConfig) => {
+    setLlmConfig(config);
     localStorage.setItem(LLM_CONFIG_KEY, JSON.stringify(config));
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <HUD llmConfig={store.llmConfig} onConfigChange={handleConfigChange} gameStats={gameStats} />
-      <ScreenTabs activeScreen={store.activeScreen} onTabChange={store.setActiveScreen} />
+      <HUD llmConfig={llmConfig} onConfigChange={handleConfigChange} gameStats={gameStats} />
+      <ScreenTabs activeScreen={activeScreen} onTabChange={setActiveScreen} />
 
       {/* Screen 1 — always mounted */}
-      <div style={{ display: store.activeScreen === 1 ? 'contents' : 'none' }}>
+      <div style={{ display: activeScreen === 1 ? 'contents' : 'none' }}>
         <div className="flex-1 mx-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
           <MaterialScreen
-            selectedMaterial={store.selectedMaterial}
-            selectedItems={store.selectedItems}
-            onSelectMaterial={store.setSelectedMaterial}
-            onAddItem={store.addItem}
-            onAddItems={store.addItems}
-            onRemoveItem={store.removeItem}
+            selectedMaterial={selectedMaterial}
+            selectedItems={selectedItems}
+            onSelectMaterial={setSelectedMaterial}
+            onAddItem={addItem}
+            onAddItems={addItems}
+            onRemoveItem={removeItem}
             onCraft={handleCraft}
-            craftLoading={store.craftLoading}
-            llmConfig={store.llmConfig}
+            craftLoading={craftLoading}
+            llmConfig={llmConfig}
             onUpdateSuggestions={(matched, aiCraft) => {
-              if (matched.length > 0) store.setAiMatchedCrafts(matched);
-              if (aiCraft) store.setAiSuggestion(aiCraft);
+              if (matched.length > 0) setAiMatchedCrafts(matched);
+              if (aiCraft) setAiSuggestion(aiCraft);
             }}
           />
         </div>
         <SuggestionCards
           suggestions={allSuggestions}
-          aiSuggestion={store.aiSuggestion}
-          onSelectCraft={store.selectCraft}
+          aiSuggestion={aiSuggestion}
+          onSelectCraft={selectCraft}
         />
       </div>
 
       {/* Screen 2 — Build or History */}
-      {store.activeScreen === 2 && (
+      {activeScreen === 2 && (
         <div className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
-          {store.selectedCraft && !store.showHistory ? (
+          {selectedCraft && !showHistory ? (
             <BuildScreen
-              craft={store.selectedCraft}
-              selectedItems={store.selectedItems}
-              llmConfig={store.llmConfig}
+              craft={selectedCraft}
+              selectedItems={selectedItems}
+              llmConfig={llmConfig}
               onCraftComplete={handleCraftComplete}
               onCoachMessage={handleCoachMessage}
-              imageCache={store.imageCache}
-              onImageGenerated={(craftId, url) => store.setImageCache(craftId, url)}
-              onShowHistory={() => store.setShowHistory(true)}
+              imageCache={imageCache}
+              onImageGenerated={(craftId, url) => setImageCache(craftId, url)}
+              onShowHistory={() => setShowHistory(true)}
             />
           ) : (
             <CraftHistory
               onBack={() => {
-                store.setShowHistory(false);
-                if (!store.selectedCraft) store.setActiveScreen(1);
+                setShowHistory(false);
+                if (!selectedCraft) setActiveScreen(1);
               }}
-              onSelectCraft={store.selectCraftFromHistory}
+              onSelectCraft={selectCraftFromHistory}
             />
           )}
         </div>
