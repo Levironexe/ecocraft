@@ -76,6 +76,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
         craftName: craft.name,
         craftDescription: craft.description,
         imagePrompt,
+        steps: craft.steps,
       }),
     })
       .then((res) => res.json())
@@ -118,7 +119,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
                   : 'bg-[var(--bg-warm)] text-[var(--text-light)] border-[var(--border)] hover:bg-[var(--bg-card)]'
               }`}
             >
-              🧊 Mô hình 3D
+              Mô hình 3D
             </button>
             <button
               onClick={() => setViewMode('image')}
@@ -128,7 +129,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
                   : 'bg-[var(--bg-warm)] text-[var(--text-light)] border-[var(--border)] hover:bg-[var(--bg-card)]'
               }`}
             >
-              🖼️ Hình tham khảo
+              Hình tham khảo
             </button>
           </div>
         )}
@@ -151,7 +152,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
           )}
           {craft.id.startsWith('ai-suggestion-') && viewMode === '3d' && (
             <div className="absolute bottom-[8px] left-[8px] text-[18px] text-[var(--text-muted)] bg-[var(--bg-card)] px-[8px] py-[2px]">
-              🤖 Mô hình AI
+              Mô hình AI
             </div>
           )}
         </div>
@@ -163,10 +164,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
   return (
     <PixelBox className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
       <div className="text-center text-[var(--text-muted)]">
-        <div className="text-[48px] mb-[8px] animate-pulse">
-          {stage === 'generating-3d' ? '🧊' : stage === 'error' ? craft.emoji : '🧊'}
-        </div>
-        <div className="text-[20px]">{stageMessage || `${craft.emoji} ${craft.name}`}</div>
+        <div className="text-[20px]">{stageMessage || craft.name}</div>
         {stage === 'generating-3d' && (
           <div className="text-[18px] mt-[4px]">Bạn có thể làm theo hướng dẫn trong khi chờ</div>
         )}

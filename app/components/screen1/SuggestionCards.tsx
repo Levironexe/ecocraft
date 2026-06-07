@@ -21,7 +21,7 @@ export function SuggestionCards({ suggestions, aiSuggestion, onSelectCraft }: Su
   return (
     <div className="mx-[16px] mb-[16px]">
       <div className="text-[22px] text-[var(--primary-dark)] mb-[8px] flex items-center gap-[6px]">
-        <span>▸</span> 💡 Gợi Ý Chế Tạo
+        <span>▸</span> Gợi Ý Chế Tạo
       </div>
       {!hasContent ? (
         <div className="text-center py-[16px] text-[var(--text-muted)] text-[18px]">
@@ -46,7 +46,7 @@ export function SuggestionCards({ suggestions, aiSuggestion, onSelectCraft }: Su
                 <div className="text-[18px] text-[var(--text-light)] mb-[6px] line-clamp-2">
                   {result.craft.description}
                 </div>
-                <div className="text-[18px] text-[var(--primary)]">🧊 3D</div>
+                <div className="text-[18px] text-[var(--primary)]">3D</div>
               </PixelBox>
             </button>
           ))}
@@ -60,14 +60,14 @@ export function SuggestionCards({ suggestions, aiSuggestion, onSelectCraft }: Su
                 <div className="flex items-start justify-between mb-[6px]">
                   <span className="text-[32px]">{aiSuggestion.emoji}</span>
                   <span className="bg-purple-500 text-white px-[6px] py-[1px] text-[18px]">
-                    🤖 AI
+                    AI
                   </span>
                 </div>
                 <div className="text-[18px] text-[var(--text)] mb-[4px]">{aiSuggestion.name}</div>
                 <div className="text-[18px] text-[var(--text-light)] mb-[6px] line-clamp-2">
                   {aiSuggestion.description}
                 </div>
-                <div className="text-[13px] text-[var(--text-muted)]">📝 Gợi ý từ AI</div>
+                <div className="text-[13px] text-[var(--text-muted)]">Gợi ý từ AI</div>
               </PixelBox>
             </button>
           )}

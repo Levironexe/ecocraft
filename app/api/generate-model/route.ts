@@ -6,11 +6,12 @@ export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
   try {
-    const { selectedItems, craftName, craftDescription, imagePrompt } = await request.json() as {
+    const { selectedItems, craftName, craftDescription, imagePrompt, steps } = await request.json() as {
       selectedItems: SelectedItem[];
       craftName: string;
       craftDescription: string;
       imagePrompt: string;
+      steps?: { number: number; title: string; detail: string; tip?: string }[];
     };
 
     if (!selectedItems?.length || !craftName || !imagePrompt) {
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest) {
       craftName,
       craftDescription,
       imagePrompt,
+      steps,
     );
 
     return Response.json(result);

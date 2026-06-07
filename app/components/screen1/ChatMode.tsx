@@ -16,7 +16,7 @@ interface ChatModeProps {
 export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggestions }: ChatModeProps) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: 'Chào bạn nhỏ! 🤖 Hãy kể cho mình nghe bạn có những vật liệu tái chế gì nhé!', timestamp: Date.now() },
+    { role: 'assistant', content: 'Chào bạn nhỏ! Hãy kể cho mình nghe bạn có những vật liệu tái chế gì nhé!', timestamp: Date.now() },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -84,14 +84,14 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
   const handleAddPending = () => {
     onAddItems(pendingItems);
     setPendingItems([]);
-    setMessages((prev) => [...prev, { role: 'assistant', content: 'Đã thêm vào túi! 🎒', timestamp: Date.now() }]);
+    setMessages((prev) => [...prev, { role: 'assistant', content: 'Đã thêm vào túi!', timestamp: Date.now() }]);
   };
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex items-center gap-[10px] mb-[8px] p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
         <div className="w-[40px] h-[40px] bg-[var(--primary)] border-[var(--pixel)] border-solid border-[var(--primary-dark)] flex items-center justify-center text-[20px]">
-          🤖
+
         </div>
         <div>
           <div className="text-[20px] text-[var(--primary-dark)]">Trợ Lý AI</div>

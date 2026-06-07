@@ -19,7 +19,7 @@ export function SettingsPanel({ onClose, llmConfig, onConfigChange, gameStats }:
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="pixel-box relative z-10 p-[20px] w-[360px] max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-[16px]">
-          <div className="text-[22px] text-[var(--primary-dark)]">⚙️ Cài Đặt</div>
+          <div className="text-[22px] text-[var(--primary-dark)]">Cài Đặt</div>
           <button onClick={onClose} className="text-[24px] cursor-pointer hover:text-[var(--accent)]">✕</button>
         </div>
 
@@ -44,7 +44,7 @@ export function SettingsPanel({ onClose, llmConfig, onConfigChange, gameStats }:
           ))}
         </div>
 
-        <div className="text-[18px] text-[var(--text-light)] mb-[10px]">🤖 AI Provider</div>
+        <div className="text-[18px] text-[var(--text-light)] mb-[10px]">AI Provider</div>
         <div className="flex flex-col gap-[8px] mb-[12px]">
           <button
             onClick={() => onConfigChange({ ...llmConfig, provider: 'groq' })}
@@ -95,10 +95,10 @@ export function SettingsPanel({ onClose, llmConfig, onConfigChange, gameStats }:
 
         <div className="text-[18px] text-[var(--text-light)] mb-[10px] mt-[16px]">📊 Thống Kê</div>
         <div className="p-[10px] bg-[var(--bg-warm)] border-[2px] border-solid border-[var(--border)] flex flex-col gap-[6px] text-[20px]">
-          <div>🏆 Đã hoàn thành: <span className="text-[var(--primary-dark)]">{gameStats.craftsCompleted}</span> sản phẩm</div>
-          <div>♻️ Đã tái chế: <span className="text-[var(--primary-dark)]">{gameStats.itemsRecycled}</span> vật liệu</div>
+          <div>Đã hoàn thành: <span className="text-[var(--primary-dark)]">{gameStats.craftsCompleted}</span> sản phẩm</div>
+          <div>Đã tái chế: <span className="text-[var(--primary-dark)]">{gameStats.itemsRecycled}</span> vật liệu</div>
           <div>📅 Ngày hoạt động: <span className="text-[var(--primary-dark)]">{gameStats.activityDates.length}</span> ngày</div>
-          <div>💬 Tin nhắn Thợ Cả: <span className="text-[var(--primary-dark)]">{gameStats.coachMessages}</span></div>
+          <div>Tin nhắn Thợ Cả: <span className="text-[var(--primary-dark)]">{gameStats.coachMessages}</span></div>
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ export function SelectedItems({ items, onRemove, onCraft, craftLoading }: Select
   return (
     <PixelBox className="p-[14px] flex-1 flex flex-col min-h-0">
       <div className="text-[22px] text-[var(--primary-dark)] mb-[8px] flex items-center gap-[6px]">
-        <span>▸</span> 🎒 Đã Chọn
+        <span>▸</span> Đã Chọn
       </div>
       <div className="flex-1 overflow-y-auto min-h-0">
         {items.length === 0 ? (

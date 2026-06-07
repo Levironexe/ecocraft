@@ -22,7 +22,6 @@ export function ItemPreview({ material, onAdd }: ItemPreviewProps) {
   if (!material) {
     return (
       <PixelBox className="p-[14px] mb-[12px] text-center">
-        <div className="text-[40px] mb-[6px]">📦</div>
         <div className="text-[var(--text-muted)]">Chọn vật liệu để xem chi tiết</div>
       </PixelBox>
     );

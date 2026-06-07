@@ -68,7 +68,7 @@ export function LoginScreen() {
           )}
 
           <PixelButton variant="primary" fullWidth disabled={loading}>
-            {loading ? '⏳ Đang xử lý...' : isSignup ? '📝 Đăng ký' : '🔑 Đăng nhập'}
+            {loading ? 'Đang xử lý...' : isSignup ? 'Đăng ký' : 'Đăng nhập'}
           </PixelButton>
         </form>
 

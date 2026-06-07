@@ -45,7 +45,7 @@ export function MaterialScreen({
                 mode === 'inventory' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--bg-warm)] text-[var(--text-light)] hover:bg-[var(--bg-warm)]'
               }`}
             >
-              📦 Kho Vật Liệu
+              Kho Vật Liệu
             </button>
             <button
               onClick={() => setMode('chat')}
@@ -53,7 +53,7 @@ export function MaterialScreen({
                 mode === 'chat' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--bg-warm)] text-[var(--text-light)] hover:bg-[var(--bg-warm)]'
               }`}
             >
-              💬 Chat AI
+              Chat AI
             </button>
           </div>
         </div>

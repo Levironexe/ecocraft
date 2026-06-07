@@ -54,6 +54,7 @@ export async function generateAndStoreModel(
   craftName: string,
   craftDescription: string,
   imagePrompt: string,
+  steps?: { number: number; title: string; detail: string; tip?: string }[],
   onProgress?: (progress: PipelineProgress) => void
 ): Promise<PipelineResult> {
   const hash = hashMaterialCombo(selectedItems);
@@ -108,6 +109,7 @@ export async function generateAndStoreModel(
       craft_description: craftDescription,
       glb_storage_path: storagePath,
       meshy_task_id: taskId,
+      steps: steps || [],
     });
 
   if (insertError) {

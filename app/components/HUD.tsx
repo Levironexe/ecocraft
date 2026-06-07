@@ -38,26 +38,26 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
 
         <div className="flex gap-[18px] items-center">
           <div className="flex items-center gap-[5px] text-[20px]">
-            ♻️ Đã tái chế: <span className="text-[#ffb74d] text-[20px]">{gameStats.itemsRecycled}</span>
+            Đã tái chế: <span className="text-[#ffb74d] text-[20px]">{gameStats.itemsRecycled}</span>
           </div>
           <div className="flex items-center gap-[5px] text-[20px]">
-            ⭐ Cấp độ: <span className="text-[#ffb74d] text-[20px]">{gameStats.level}</span>
+            Cấp độ: <span className="text-[#ffb74d] text-[20px]">{gameStats.level}</span>
           </div>
           <div className="flex items-center gap-[5px] text-[20px]">
-            🏆 Điểm: <span className="text-[#ffb74d] text-[20px]">{gameStats.points}</span>
+            Điểm: <span className="text-[#ffb74d] text-[20px]">{gameStats.points}</span>
           </div>
           <button
             onClick={() => setShowSettings(true)}
             className="text-[22px] cursor-pointer hover:scale-110 transition-transform"
           >
-            ⚙️
+            Cài đặt
           </button>
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="text-[18px] text-white/70 hover:text-white cursor-pointer bg-transparent border-none"
             title={user.email}
           >
-            🚪
+            Đăng xuất
           </button>
         </div>
       </div>
@@ -75,7 +75,6 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowLogoutConfirm(false)} />
           <div className="pixel-box relative z-10 p-[24px] w-[340px] text-center">
-            <div className="text-[32px] mb-[8px]">🚪</div>
             <div className="text-[22px] text-[var(--text)] mb-[4px]">Đăng xuất?</div>
             <div className="text-[18px] text-[var(--text-light)] mb-[16px]">Bạn có chắc muốn đăng xuất không?</div>
             <div className="flex gap-[10px]">

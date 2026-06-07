@@ -19,7 +19,7 @@ interface MaterialsBarProps {
 }
 
 export function MaterialsBar({ craft, selectedItems }: MaterialsBarProps) {
-  const stars = '⭐'.repeat(craft.difficulty);
+  const stars = '★'.repeat(craft.difficulty);
 
   useEffect(() => {
     import('@google/model-viewer');
@@ -80,7 +80,7 @@ export function MaterialsBar({ craft, selectedItems }: MaterialsBarProps) {
                   style={{ width: '36px', height: '36px', pointerEvents: 'none', backgroundColor: 'transparent' }}
                 />
               ) : (
-                <span>🔧</span>
+                <span></span>
               )}
               {tool}
             </span>

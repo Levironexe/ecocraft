@@ -90,23 +90,22 @@ export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, 
       {showCelebration && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 pointer-events-none">
           <div className="pixel-box p-[24px] text-center pointer-events-auto">
-            <div className="text-[48px] mb-[8px]">🎉</div>
             <div className="text-[24px] text-[var(--primary-dark)]">Tuyệt vời!</div>
             <div className="text-[20px]">Bạn đã hoàn thành {craft.name}!</div>
             <div className="text-[18px] text-[var(--accent)] mt-[4px]">+{50 + craft.steps.length * 10} điểm!</div>
           </div>
         </div>
       )}
-      <div className="flex items-center gap-0">
+      <div className="flex items-stretch gap-0">
         <div className="flex-1">
           <MaterialsBar craft={craft} selectedItems={selectedItems} />
         </div>
         {onShowHistory && (
           <button
             onClick={onShowHistory}
-            className="pixel-btn pixel-btn-ghost shrink-0 text-[18px] h-full"
+            className="pixel-btn pixel-btn-ghost shrink-0 text-[18px] p-[8px] leading-none"
           >
-            📜 Lịch sử
+            Lịch sử
           </button>
         )}
       </div>
@@ -140,7 +139,7 @@ export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, 
               className="w-[40px] shrink-0 flex items-center justify-center cursor-pointer bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] transition-colors"
               style={{ writingMode: 'vertical-rl' }}
             >
-              🔧 Thợ Cả
+              Thợ Cả
             </button>
           )}
 

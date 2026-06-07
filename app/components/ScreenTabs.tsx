@@ -6,8 +6,8 @@ interface ScreenTabsProps {
 }
 
 const tabs = [
-  { screen: 1 as const, label: '🎒 Chọn Vật Liệu' },
-  { screen: 2 as const, label: '🔨 Xưởng Chế Tạo' },
+  { screen: 1 as const, label: 'Chọn Vật Liệu' },
+  { screen: 2 as const, label: 'Xưởng Chế Tạo' },
 ];
 
 export function ScreenTabs({ activeScreen, onTabChange }: ScreenTabsProps) {

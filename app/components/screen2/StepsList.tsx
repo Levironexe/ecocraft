@@ -52,7 +52,6 @@ export function StepsList({ steps, completedSteps, onToggleStep }: StepsListProp
                 </div>
                 {step.tip && (
                   <div className="text-[18px] mt-[4px] text-[var(--accent)] flex items-start gap-[4px]">
-                    <span>💡</span>
                     <span>{step.tip}</span>
                   </div>
                 )}
