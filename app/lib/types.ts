@@ -101,3 +101,8 @@ export interface GeneratedModel {
   meshy_task_id?: string;
   created_at: string;
 }
+
+export interface AppUser {
+  id: string;
+  email: string;
+}

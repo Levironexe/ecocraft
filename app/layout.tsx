@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { VT323 } from "next/font/google";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { AuthProvider } from "./components/AuthProvider";
 import { PixelParticles } from "./components/PixelParticles";
 import "./globals.css";
 
@@ -25,7 +26,9 @@ export default function RootLayout({
       <body className={vt323.className}>
         <PixelParticles />
         <ThemeProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

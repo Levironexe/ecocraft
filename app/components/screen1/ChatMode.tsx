@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { SelectedItem, LLMConfig, ChatMessage, Craft, MatchResult } from '../../lib/types';
 import { PixelButton } from '../ui/PixelButton';
+import { useAuth } from '../AuthProvider';
+import { loadChatHistory, saveChatMessage } from '../../lib/chat-store';
 
 interface ChatModeProps {
   selectedItems: SelectedItem[];
@@ -12,6 +14,7 @@ interface ChatModeProps {
 }
 
 export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggestions }: ChatModeProps) {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'assistant', content: 'Chào bạn nhỏ! 🤖 Hãy kể cho mình nghe bạn có những vật liệu tái chế gì nhé!', timestamp: Date.now() },
   ]);
@@ -22,6 +25,12 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    loadChatHistory(user.id).then((history) => {
+      if (history.length > 0) setMessages(history);
+    });
+  }, [user.id]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
@@ -30,7 +39,9 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
 
     const userMessage = input.trim();
     setInput('');
-    setMessages((prev) => [...prev, { role: 'user', content: userMessage, timestamp: Date.now() }]);
+    const userMsg: ChatMessage = { role: 'user', content: userMessage, timestamp: Date.now() };
+    setMessages((prev) => [...prev, userMsg]);
+    saveChatMessage(user.id, userMsg);
     setIsTyping(true);
 
     try {
@@ -47,7 +58,9 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
       });
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply, timestamp: Date.now() }]);
+      const assistantMsg: ChatMessage = { role: 'assistant', content: data.reply, timestamp: Date.now() };
+      setMessages((prev) => [...prev, assistantMsg]);
+      saveChatMessage(user.id, assistantMsg);
 
       if (data.extractedItems?.length > 0) {
         setPendingItems(data.extractedItems);

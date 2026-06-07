@@ -5,6 +5,7 @@ import { Material, SelectedItem, Craft, LLMConfig, MatchResult, GameStats } from
 import { crafts } from './lib/crafts';
 import { matchCrafts } from './lib/matcher';
 import { getStats, saveStats, completeCraft, recordCoachMessage } from './lib/gamification';
+import { useAuth } from './components/AuthProvider';
 import { HUD } from './components/HUD';
 import { ScreenTabs } from './components/ScreenTabs';
 import { MaterialScreen } from './components/screen1/MaterialScreen';
@@ -15,6 +16,7 @@ const LLM_CONFIG_KEY = 'ecocraft-llm-config';
 const DEFAULT_CONFIG: LLMConfig = { provider: 'groq' };
 
 export default function Home() {
+  const { user } = useAuth();
   const [activeScreen, setActiveScreen] = useState<1 | 2>(1);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
@@ -28,13 +30,12 @@ export default function Home() {
   });
 
   useEffect(() => {
-    setGameStats(getStats());
+    getStats(user.id).then(setGameStats);
     try {
       const saved = localStorage.getItem(LLM_CONFIG_KEY);
       if (saved) setLlmConfig(JSON.parse(saved));
-    } catch { /* use default */ }
-    setGameStats(getStats());
-  }, []);
+    } catch {}
+  }, [user.id]);
 
   const handleConfigChange = (config: LLMConfig) => {
     setLlmConfig(config);
@@ -43,13 +44,13 @@ export default function Home() {
 
   const handleCraftComplete = (craft: Craft) => {
     const updated = completeCraft(gameStats, craft);
-    saveStats(updated);
+    saveStats(user.id, updated);
     setGameStats(updated);
   };
 
   const handleCoachMessage = () => {
     const updated = recordCoachMessage(gameStats);
-    saveStats(updated);
+    saveStats(user.id, updated);
     setGameStats(updated);
   };
 

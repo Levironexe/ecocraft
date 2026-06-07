@@ -1,6 +1,7 @@
 import { GameStats, Craft } from './types';
+import { createBrowserClient } from './supabase';
 
-const STORAGE_KEY = 'ecocraft-stats';
+const LOCAL_STORAGE_KEY = 'ecocraft-stats';
 
 const DEFAULT_STATS: GameStats = {
   craftsCompleted: 0,
@@ -25,18 +26,62 @@ function addToday(dates: string[]): string[] {
   return [...dates, today];
 }
 
-export function getStats(): GameStats {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch { /* use default */ }
-  return { ...DEFAULT_STATS };
+function toDbRow(userId: string, stats: GameStats) {
+  return {
+    user_id: userId,
+    crafts_completed: stats.craftsCompleted,
+    items_recycled: stats.itemsRecycled,
+    coach_messages: stats.coachMessages,
+    level: stats.level,
+    points: stats.points,
+    activity_dates: stats.activityDates,
+    updated_at: new Date().toISOString(),
+  };
 }
 
-export function saveStats(stats: GameStats): void {
+function fromDbRow(row: Record<string, unknown>): GameStats {
+  return {
+    craftsCompleted: (row.crafts_completed as number) || 0,
+    itemsRecycled: (row.items_recycled as number) || 0,
+    coachMessages: (row.coach_messages as number) || 0,
+    level: (row.level as number) || 1,
+    points: (row.points as number) || 0,
+    activityDates: (row.activity_dates as string[]) || [],
+  };
+}
+
+export async function getStats(userId: string): Promise<GameStats> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
-  } catch { /* localStorage full — silent fail */ }
+    const supabase = createBrowserClient();
+    const { data, error } = await supabase
+      .from('user_stats')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) {
+      return getLocalStats();
+    }
+
+    const stats = fromDbRow(data);
+    saveLocalStats(stats);
+    return stats;
+  } catch {
+    return getLocalStats();
+  }
+}
+
+export async function saveStats(userId: string, stats: GameStats): Promise<void> {
+  saveLocalStats(stats);
+
+  try {
+    const supabase = createBrowserClient();
+    await supabase
+      .from('user_stats')
+      .upsert(toDbRow(userId, stats));
+  } catch {
+    console.error('[gamification] Failed to save to Supabase');
+  }
 }
 
 export function completeCraft(stats: GameStats, craft: Craft): GameStats {
@@ -64,4 +109,18 @@ export function recordCoachMessage(stats: GameStats): GameStats {
     level: calculateLevel(newPoints),
     activityDates: addToday(stats.activityDates),
   };
+}
+
+function getLocalStats(): GameStats {
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return { ...DEFAULT_STATS };
+}
+
+function saveLocalStats(stats: GameStats): void {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stats));
+  } catch {}
 }

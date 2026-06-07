@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { LLMConfig, GameStats } from '../lib/types';
 import { SettingsPanel } from './SettingsPanel';
+import { useAuth } from './AuthProvider';
 
 interface HUDProps {
   llmConfig: LLMConfig;
@@ -11,6 +12,7 @@ interface HUDProps {
 }
 
 export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
+  const { user, logout } = useAuth();
   const [showSettings, setShowSettings] = useState(false);
 
   return (
@@ -48,6 +50,13 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
             className="text-[22px] cursor-pointer hover:scale-110 transition-transform"
           >
             ⚙️
+          </button>
+          <button
+            onClick={logout}
+            className="text-[18px] text-white/70 hover:text-white cursor-pointer bg-transparent border-none"
+            title={user.email}
+          >
+            🚪
           </button>
         </div>
       </div>
