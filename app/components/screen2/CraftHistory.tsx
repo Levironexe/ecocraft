@@ -6,6 +6,7 @@ import { createBrowserClient } from '../../lib/supabase';
 import { PixelBox } from '../ui/PixelBox';
 import { PixelButton } from '../ui/PixelButton';
 import { Craft } from '../../lib/types';
+import { crafts as libraryCrafts } from '../../lib/crafts';
 
 interface CraftHistoryItem {
   id: string;
@@ -75,7 +76,7 @@ export function CraftHistory({ onBack, onSelectCraft }: CraftHistoryProps) {
       ageMin: 6,
       timeMinutes: 20,
       materials: item.materials.map((m) => ({ materialId: m.materialId, quantity: m.quantity })),
-      tools: [],
+      tools: libraryCrafts.find((c) => c.name === item.craft_name)?.tools || ['Kéo', 'Keo dán'],
       steps: item.steps.length > 0
         ? item.steps
         : [{ number: 1, title: 'Đã hoàn thành', detail: 'Sản phẩm này đã được chế tạo trước đó.' }],
