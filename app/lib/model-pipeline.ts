@@ -63,7 +63,8 @@ export async function generateAndStoreModel(
 
   onProgress?.({ stage: 'generating-image', message: 'Đang tạo hình ảnh tham khảo...' });
   const meshyPrompt = `Multi-view orthographic reference sheet. ${imagePrompt} Show: large isometric 3/4 hero shot, FRONT VIEW, SIDE VIEW, BACK VIEW, TOP VIEW. Dark grey background. Labeled views. Stylized cartoon game asset, bright vivid colors, clean low-poly aesthetic. Professional game asset turnaround reference sheet.`;
-  const imageBuffer = await generateImageBuffer(meshyPrompt);
+  const materialIds = selectedItems.map((i) => i.materialId);
+  const imageBuffer = await generateImageBuffer(meshyPrompt, materialIds);
   console.log(`[Pipeline] Leonardo image generated: ${imageBuffer.length} bytes`);
 
   onProgress?.({ stage: 'generating-3d', message: 'Đang tạo mô hình 3D... (2-5 phút)' });

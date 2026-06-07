@@ -23,14 +23,13 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
   const [glbUrl, setGlbUrl] = useState<string | null>(null);
   const [stage, setStage] = useState<PipelineStage>('idle');
   const [stageMessage, setStageMessage] = useState('');
-  const isAiCraft = craft.id.startsWith('ai-suggestion-');
   const craftIdRef = useRef(craft.id);
 
   useEffect(() => {
-    if (craft.modelPath || glbUrl) {
+    if (glbUrl) {
       import('@google/model-viewer');
     }
-  }, [craft.modelPath, glbUrl]);
+  }, [glbUrl]);
 
   useEffect(() => {
     craftIdRef.current = craft.id;
@@ -38,7 +37,13 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
     setStage('idle');
     setStageMessage('');
 
-    if (!isAiCraft || craft.modelPath) return;
+    if (cachedImageUrl) {
+      // cachedImageUrl is actually the cached glbUrl from page state
+      setGlbUrl(cachedImageUrl);
+      setStage('done');
+      return;
+    }
+
     const key = craftKey(craft);
     if (inFlightRequests.has(key)) return;
 
@@ -52,6 +57,9 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
       .filter(Boolean)
       .join(', ');
 
+    const imagePrompt = craft.imagePrompt ||
+      `Multi-view orthographic reference sheet of a finished children's craft toy: ${craft.name}. ${craft.description}. Made from recycled ${materialNames}. Show six views arranged on a clean dark grey background: large isometric 3/4 view in the top-left as the hero shot, then FRONT VIEW, LEFT SIDE VIEW, BACK VIEW, RIGHT SIDE VIEW in a row across the middle, and TOP VIEW in the lower section. Each view labeled in clean white sans-serif text. Include simple dimension lines. Stylized cartoon game asset style, bright vivid saturated colors, soft studio lighting, clean low-poly aesthetic, consistent colors across all views. Professional game asset turnaround reference sheet layout.`;
+
     fetch('/api/generate-model', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -63,7 +71,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
         })),
         craftName: craft.name,
         craftDescription: craft.description,
-        imagePrompt: craft.imagePrompt || `A cute children's craft: ${craft.name}, made from ${materialNames}. Cartoon game asset, white background.`,
+        imagePrompt,
       }),
     })
       .then((res) => res.json())
@@ -88,23 +96,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [craft.id, cachedImageUrl]);
 
-  // Library craft with pre-installed GLB
-  if (craft.modelPath) {
-    return (
-      <div className="flex-1 relative">
-        <model-viewer
-          src={craft.modelPath}
-          auto-rotate
-          rotation-per-second="36deg"
-          camera-controls
-          shadow-intensity="1"
-          style={{ width: '100%', height: '100%' }}
-        />
-      </div>
-    );
-  }
-
-  // AI craft with generated GLB ready
+  // GLB ready — show 3D model
   if (glbUrl) {
     return (
       <div className="flex-1 relative">
@@ -116,42 +108,32 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
           shadow-intensity="1"
           style={{ width: '100%', height: '100%' }}
         />
-        <div className="absolute bottom-[8px] left-[8px] text-[18px] text-[var(--text-muted)] bg-[var(--bg-card)] px-[8px] py-[2px]">
-          🤖 Mô hình AI
-        </div>
-      </div>
-    );
-  }
-
-  // AI craft — generating
-  if (isAiCraft) {
-    return (
-      <PixelBox className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
-        <div className="text-center text-[var(--text-muted)]">
-          <div className="text-[48px] mb-[8px] animate-pulse">
-            {stage === 'generating-3d' ? '🧊' : craft.emoji}
-          </div>
-          <div className="text-[20px]">{stageMessage || '📝 Gợi ý từ AI'}</div>
-          {stage === 'generating-3d' && (
-            <div className="text-[18px] mt-[4px]">Bạn có thể làm theo hướng dẫn trong khi chờ</div>
-          )}
-        </div>
-        {stage === 'error' && (
-          <div className="absolute bottom-[8px] text-[18px] text-[var(--accent)]">
-            Không tạo được mô hình 3D
+        {craft.id.startsWith('ai-suggestion-') && (
+          <div className="absolute bottom-[8px] left-[8px] text-[18px] text-[var(--text-muted)] bg-[var(--bg-card)] px-[8px] py-[2px]">
+            🤖 Mô hình AI
           </div>
         )}
-      </PixelBox>
+      </div>
     );
   }
 
-  // Non-showcase library craft (no model, no AI)
+  // Generating or error
   return (
-    <PixelBox className="flex-1 flex items-center justify-center">
+    <PixelBox className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
       <div className="text-center text-[var(--text-muted)]">
-        <div className="text-[64px] mb-[8px]">{craft.emoji}</div>
-        <div className="text-[20px]">{craft.name}</div>
+        <div className="text-[48px] mb-[8px] animate-pulse">
+          {stage === 'generating-3d' ? '🧊' : stage === 'error' ? craft.emoji : '🧊'}
+        </div>
+        <div className="text-[20px]">{stageMessage || `${craft.emoji} ${craft.name}`}</div>
+        {stage === 'generating-3d' && (
+          <div className="text-[18px] mt-[4px]">Bạn có thể làm theo hướng dẫn trong khi chờ</div>
+        )}
       </div>
+      {stage === 'error' && (
+        <div className="absolute bottom-[8px] text-[18px] text-[var(--accent)]">
+          Không tạo được mô hình 3D
+        </div>
+      )}
     </PixelBox>
   );
 }

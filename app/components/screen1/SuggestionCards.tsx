@@ -46,12 +46,7 @@ export function SuggestionCards({ suggestions, aiSuggestion, onSelectCraft }: Su
                 <div className="text-[18px] text-[var(--text-light)] mb-[6px] line-clamp-2">
                   {result.craft.description}
                 </div>
-                <div className="text-[13px]">
-                  {result.craft.modelPath
-                    ? <span className="text-[var(--primary)]">🎮 Có 3D</span>
-                    : <span className="text-[var(--text-muted)]">📝 Chỉ hướng dẫn</span>
-                  }
-                </div>
+                <div className="text-[18px] text-[var(--primary)]">🧊 3D</div>
               </PixelBox>
             </button>
           ))}
