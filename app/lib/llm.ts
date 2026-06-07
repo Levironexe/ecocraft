@@ -35,7 +35,7 @@ async function chatGroq(
   ];
 
   const body: Record<string, unknown> = {
-    model: 'llama-3.1-8b-instant',
+    model: 'llama-3.3-70b-versatile',
     messages: groqMessages,
     temperature: 0.7,
     max_tokens: 1024,
@@ -77,6 +77,7 @@ async function chatGroq(
   }
 
   const data = await res.json();
+  console.log('[Groq] Model used:', data.model, '| Tokens:', data.usage?.total_tokens);
   return data.choices?.[0]?.message?.content || '';
 }
 

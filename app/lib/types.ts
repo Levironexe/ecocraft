@@ -90,3 +90,14 @@ export interface GameStats {
   points: number;
   activityDates: string[];
 }
+
+export interface GeneratedModel {
+  id: string;
+  material_combo_hash: string;
+  materials: { materialId: string; quantity: number }[];
+  craft_name: string;
+  craft_description?: string;
+  glb_storage_path: string;
+  meshy_task_id?: string;
+  created_at: string;
+}
