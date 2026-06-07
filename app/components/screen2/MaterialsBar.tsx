@@ -39,12 +39,12 @@ export function MaterialsBar({ craft, selectedItems }: MaterialsBarProps) {
         </div>
       </div>
       <div className="flex flex-wrap gap-[6px] items-center">
-        {selectedItems.map((item) => {
+        {(selectedItems.length > 0 ? selectedItems : craft.materials.map((cm) => ({ materialId: cm.materialId, size: '', quantity: cm.quantity }))).map((item) => {
           const mat = materials.find((m) => m.id === item.materialId);
           if (!mat) return null;
           return (
             <span
-              key={`${item.materialId}-${item.size}`}
+              key={`${item.materialId}-${item.size || 'default'}`}
               className="flex items-center gap-[4px] px-[8px] py-[2px] text-[18px] border-[2px] border-solid border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary-dark)]"
             >
               {mat.modelPath ? (
@@ -64,7 +64,7 @@ export function MaterialsBar({ craft, selectedItems }: MaterialsBarProps) {
           );
         })}
         {craft.tools.map((tool) => {
-          const toolModel = toolModels[tool];
+          const toolModel = toolModels[tool] || Object.entries(toolModels).find(([k]) => tool.startsWith(k))?.[1];
           return (
             <span
               key={tool}

@@ -176,7 +176,8 @@ async function pollForImageUrl(generationId: string, apiKey: string): Promise<st
     if (images?.[0]?.url) return images[0].url;
 
     if (data.generations_by_pk?.status === 'FAILED') {
-      throw new Error('Leonardo generation failed');
+      console.error('[Leonardo] Generation FAILED:', JSON.stringify(data.generations_by_pk).slice(0, 500));
+      throw new Error(`Leonardo generation failed: ${data.generations_by_pk?.failureReason || data.generations_by_pk?.failure_reason || 'unknown'}`);
     }
   }
 
