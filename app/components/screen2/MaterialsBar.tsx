@@ -32,7 +32,7 @@ export function MaterialsBar({ craft, selectedItems }: MaterialsBarProps) {
           <span>{craft.emoji}</span>
           <span className="text-[var(--primary-dark)]">{craft.name}</span>
         </div>
-        <div className="flex items-center gap-[12px] text-[20px] text-[var(--text-light)]">
+        <div className="flex items-center gap-[12px] text-[18px] text-[var(--text-light)]">
           <span>{stars}</span>
           <span>⏱ {craft.timeMinutes} phút</span>
           <span>👶 {craft.ageMin}+ tuổi</span>

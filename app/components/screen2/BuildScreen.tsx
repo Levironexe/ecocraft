@@ -90,8 +90,8 @@ export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, 
       {showCelebration && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 pointer-events-none">
           <div className="pixel-box p-[24px] text-center pointer-events-auto">
-            <div className="text-[24px] text-[var(--primary-dark)]">Tuyệt vời!</div>
-            <div className="text-[20px]">Bạn đã hoàn thành {craft.name}!</div>
+            <div className="text-[22px] text-[var(--primary-dark)]">Tuyệt vời!</div>
+            <div className="text-[18px]">Bạn đã hoàn thành {craft.name}!</div>
             <div className="text-[18px] text-[var(--accent)] mt-[4px]">+{50 + craft.steps.length * 10} điểm!</div>
           </div>
         </div>
@@ -148,7 +148,7 @@ export function BuildScreen({ craft, selectedItems, llmConfig, onCraftComplete, 
             <div className="overflow-hidden relative" style={{ width: `${chatWidth}%`, minWidth: '200px' }}>
               <button
                 onClick={() => setChatOpen(false)}
-                className="absolute top-[8px] right-[8px] z-10 w-[24px] h-[24px] flex items-center justify-center bg-[var(--bg-warm)] border border-[var(--border)] cursor-pointer hover:bg-[var(--accent)] hover:text-white text-[14px]"
+                className="absolute top-[8px] right-[8px] z-10 w-[24px] h-[24px] flex items-center justify-center bg-[var(--bg-warm)] border border-[var(--border)] cursor-pointer hover:bg-[var(--accent)] hover:text-white text-[13px]"
               >
                 ✕
               </button>

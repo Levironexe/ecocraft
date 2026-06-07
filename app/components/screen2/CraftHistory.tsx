@@ -95,7 +95,7 @@ export function CraftHistory({ onBack, onSelectCraft }: CraftHistoryProps) {
   return (
     <div className="flex flex-col h-full p-[16px] overflow-y-auto">
       <div className="flex items-center justify-between mb-[16px]">
-        <div className="text-[24px] text-[var(--primary-dark)] flex items-center gap-[8px]">
+        <div className="text-[22px] text-[var(--primary-dark)] flex items-center gap-[8px]">
           <span>▸</span> Lịch Sử Chế Tạo
         </div>
         <PixelButton variant="ghost" onClick={onBack}>
@@ -104,12 +104,12 @@ export function CraftHistory({ onBack, onSelectCraft }: CraftHistoryProps) {
       </div>
 
       {loading ? (
-        <div className="text-center py-[32px] text-[var(--text-muted)] text-[20px] animate-pulse">
+        <div className="text-center py-[32px] text-[var(--text-muted)] text-[18px] animate-pulse">
           Đang tải...
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-[32px] text-[var(--text-muted)]">
-          <div className="text-[20px]">Chưa có sản phẩm nào</div>
+          <div className="text-[18px]">Chưa có sản phẩm nào</div>
           <div className="text-[18px]">Hãy chọn vật liệu và bắt đầu chế tạo!</div>
         </div>
       ) : (
@@ -134,9 +134,9 @@ export function CraftHistory({ onBack, onSelectCraft }: CraftHistoryProps) {
                       {item.craft_description && (
                         <div className="text-[18px] text-[var(--text-light)] truncate">{item.craft_description}</div>
                       )}
-                      <div className="text-[16px] text-[var(--text-muted)] mt-[2px]">{date}</div>
+                      <div className="text-[15px] text-[var(--text-muted)] mt-[2px]">{date}</div>
                     </div>
-                    <span className={`${status.color} text-black px-[10px] py-[4px] text-[16px] shrink-0`}>
+                    <span className={`${status.color} text-black px-[10px] py-[4px] text-[15px] shrink-0`}>
                       {status.label}
                     </span>
                   </div>

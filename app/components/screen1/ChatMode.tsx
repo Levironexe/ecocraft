@@ -90,12 +90,12 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
   return (
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex items-center gap-[10px] mb-[8px] p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
-        <div className="w-[40px] h-[40px] bg-[var(--primary)] border-[var(--pixel)] border-solid border-[var(--primary-dark)] flex items-center justify-center text-[20px]">
+        <div className="w-[40px] h-[40px] bg-[var(--primary)] border-[var(--pixel)] border-solid border-[var(--primary-dark)] flex items-center justify-center text-[15px]">
           🤖
         </div>
         <div>
-          <div className="text-[20px] text-[var(--primary-dark)]">Trợ Lý AI</div>
-          <div className="text-[18px] text-[var(--text-light)]">Giúp bạn tìm vật liệu</div>
+          <div className="text-[15px] text-[var(--primary-dark)]">Trợ Lý AI</div>
+          <div className="text-[13px] text-[var(--text-light)]">Giúp bạn tìm vật liệu</div>
         </div>
       </div>
 
@@ -103,13 +103,13 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`max-w-[85%] p-[8px] text-[21px] leading-[1.4] ${
+            className={`max-w-[85%] p-[8px] text-[15px] leading-[1.4] ${
               msg.role === 'assistant'
                 ? 'self-start bg-white border-[2px] border-solid border-[var(--border)] border-l-[var(--pixel)] border-l-[var(--primary)]'
                 : 'self-end bg-[var(--accent-light)] border-[2px] border-solid border-[var(--accent)]'
             }`}
           >
-            <span className={`text-[18px] block mb-[2px] ${
+            <span className={`text-[13px] block mb-[2px] ${
               msg.role === 'assistant' ? 'text-[var(--primary-dark)]' : 'text-[var(--accent)]'
             }`}>
               {msg.role === 'assistant' ? 'Trợ Lý' : 'Bạn'}
@@ -120,7 +120,7 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
 
         {pendingItems.length > 0 && (
           <div className="self-start p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
-            <div className="text-[19px] mb-[6px]">Thêm vào túi?</div>
+            <div className="text-[13px] mb-[6px]">Thêm vào túi?</div>
             <PixelButton variant="primary" onClick={handleAddPending}>
               Thêm {pendingItems.length} vật liệu
             </PixelButton>

@@ -67,8 +67,8 @@ export function MaterialModal({ material, onClose }: MaterialModalProps) {
         {/* Info section */}
         <div className="p-[16px] overflow-y-auto">
           <div className="flex items-center justify-between mb-[8px]">
-            <div className="text-[28px] text-[var(--primary-dark)]">{material.name}</div>
-            <span className="px-[10px] py-[2px] text-[16px] bg-[var(--primary-light)] text-[var(--primary-dark)] border-[2px] border-solid border-[var(--primary)]">
+            <div className="text-[22px] text-[var(--primary-dark)]">{material.name}</div>
+            <span className="px-[10px] py-[2px] text-[15px] bg-[var(--primary-light)] text-[var(--primary-dark)] border-[2px] border-solid border-[var(--primary)]">
               {categoryLabels[material.category] || material.category}
             </span>
           </div>
@@ -84,7 +84,7 @@ export function MaterialModal({ material, onClose }: MaterialModalProps) {
           {material.funFact && (
             <div className="p-[12px] bg-[var(--bg-warm)] border-[2px] border-solid border-[var(--primary-light)]">
               <div className="text-[18px] text-[var(--primary-dark)] mb-[4px]">Bạn có biết?</div>
-              <div className="text-[20px] text-[var(--text-light)] leading-[1.4]">{material.funFact}</div>
+              <div className="text-[18px] text-[var(--text-light)] leading-[1.4]">{material.funFact}</div>
             </div>
           )}
         </div>

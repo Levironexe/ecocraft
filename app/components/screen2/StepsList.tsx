@@ -16,7 +16,7 @@ export function StepsList({ steps, completedSteps, onToggleStep }: StepsListProp
 
   return (
     <div className="flex flex-col gap-[6px] overflow-y-auto h-full p-[8px]">
-      <div className="text-[20px] text-[var(--primary-dark)] mb-[4px] flex items-center gap-[6px]">
+      <div className="text-[18px] text-[var(--primary-dark)] mb-[4px] flex items-center gap-[6px]">
         <span>▸</span> 📋 Các Bước Làm (Click để đánh dấu hoàn thành)
       </div>
       {steps.map((step) => {
@@ -33,7 +33,7 @@ export function StepsList({ steps, completedSteps, onToggleStep }: StepsListProp
           >
             <div className="flex items-start gap-[8px]">
               <div
-                className={`w-[28px] h-[28px] flex items-center justify-center border-[2px] border-solid text-[20px] shrink-0 ${
+                className={`w-[28px] h-[28px] flex items-center justify-center border-[2px] border-solid text-[18px] shrink-0 ${
                   isDone
                     ? 'bg-green-500 border-green-700 text-white'
                     : isCurrent
@@ -44,14 +44,14 @@ export function StepsList({ steps, completedSteps, onToggleStep }: StepsListProp
                 {isDone ? '✓' : step.number}
               </div>
               <div className="flex-1 min-w-0">
-                <div className={`text-[26px] ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text)]'}`}>
+                <div className={`text-[18px] font-semibold ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text)]'}`}>
                   {step.title}
                 </div>
-                <div className={`text-[23px] mt-[2px] ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-light)]'}`}>
+                <div className={`text-[15px] mt-[2px] ${isDone ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-light)]'}`}>
                   {step.detail}
                 </div>
                 {step.tip && (
-                  <div className="text-[18px] mt-[4px] text-[var(--accent)] flex items-start gap-[4px]">
+                  <div className="text-[13px] mt-[4px] text-[var(--accent)] flex items-start gap-[4px]">
                     <span>{step.tip}</span>
                   </div>
                 )}

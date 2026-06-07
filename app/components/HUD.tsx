@@ -25,7 +25,7 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
           borderBottom: 'var(--pixel) solid var(--hud-border)',
         }}
       >
-        <div className="text-[26px] flex items-center gap-[8px]" style={{ color: '#ffb74d', textShadow: '2px 2px 0 rgba(0,0,0,0.4)' }}>
+        <div className="text-[22px] flex items-center gap-[8px]" style={{ color: '#ffb74d', textShadow: '2px 2px 0 rgba(0,0,0,0.4)' }}>
           <span
             className="leaf-bob inline-block w-[20px] h-[20px]"
             style={{
@@ -37,14 +37,14 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
         </div>
 
         <div className="flex gap-[18px] items-center">
-          <div className="flex items-center gap-[5px] text-[20px]">
-            Đã tái chế: <span className="text-[#ffb74d] text-[20px]">{gameStats.itemsRecycled}</span>
+          <div className="flex items-center gap-[5px] text-[18px]">
+            Đã tái chế: <span className="text-[#ffb74d] text-[18px]">{gameStats.itemsRecycled}</span>
           </div>
-          <div className="flex items-center gap-[5px] text-[20px]">
-            Cấp độ: <span className="text-[#ffb74d] text-[20px]">{gameStats.level}</span>
+          <div className="flex items-center gap-[5px] text-[18px]">
+            Cấp độ: <span className="text-[#ffb74d] text-[18px]">{gameStats.level}</span>
           </div>
-          <div className="flex items-center gap-[5px] text-[20px]">
-            Điểm: <span className="text-[#ffb74d] text-[20px]">{gameStats.points}</span>
+          <div className="flex items-center gap-[5px] text-[18px]">
+            Điểm: <span className="text-[#ffb74d] text-[18px]">{gameStats.points}</span>
           </div>
           <button
             onClick={() => setShowSettings(true)}

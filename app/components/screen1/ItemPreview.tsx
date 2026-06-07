@@ -55,9 +55,9 @@ export function ItemPreview({ material, onAdd }: ItemPreviewProps) {
       ) : (
         <div className="text-[56px] mb-[6px]">{material.emoji}</div>
       )}
-      <div className="text-[24px] mb-[8px]">{material.name}</div>
+      <div className="text-[22px] mb-[8px]">{material.name}</div>
       <div className="flex items-center justify-center gap-[12px] mb-[10px]">
-        <label className="text-[20px] text-[var(--text-light)]">Kích cỡ:</label>
+        <label className="text-[18px] text-[var(--text-light)]">Kích cỡ:</label>
         <select
           value={currentSize}
           onChange={(e) => setSize(e.target.value)}

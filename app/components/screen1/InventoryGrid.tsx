@@ -81,7 +81,7 @@ export function InventoryGrid({ selectedMaterialId, onSelect }: InventoryGridPro
                   rotation-per-second="36deg"
                 />
               ) : (
-                <span className="text-[28px] mb-[2px]">{m.emoji}</span>
+                <span className="text-[22px] mb-[2px]">{m.emoji}</span>
               )}
               <span className={`text-[18px] text-center leading-tight mt-auto ${
                 selectedMaterialId === m.id ? 'text-[var(--primary-dark)]' : 'text-[var(--text-light)]'

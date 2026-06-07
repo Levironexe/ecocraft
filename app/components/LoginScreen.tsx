@@ -41,7 +41,7 @@ export function LoginScreen() {
         <div className="text-center mb-[24px]">
           <div className="text-[48px]">🌿</div>
           <h1 className="text-[32px] text-[var(--primary-dark)]">EcoCraft AI</h1>
-          <p className="text-[20px] text-[var(--text-light)]">Sáng Tạo Từ Rác</p>
+          <p className="text-[18px] text-[var(--text-light)]">Sáng Tạo Từ Rác</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-[12px]">
@@ -64,7 +64,7 @@ export function LoginScreen() {
           />
 
           {error && (
-            <div className="text-[16px] text-[var(--accent)] text-center">{error}</div>
+            <div className="text-[15px] text-[var(--accent)] text-center">{error}</div>
           )}
 
           <PixelButton variant="primary" fullWidth disabled={loading}>
@@ -75,7 +75,7 @@ export function LoginScreen() {
         <div className="text-center mt-[16px]">
           <button
             onClick={() => { setIsSignup(!isSignup); setError(''); }}
-            className="text-[16px] text-[var(--primary)] underline cursor-pointer bg-transparent border-none"
+            className="text-[15px] text-[var(--primary)] underline cursor-pointer bg-transparent border-none"
           >
             {isSignup ? 'Đã có tài khoản? Đăng nhập' : 'Chưa có tài khoản? Đăng ký'}
           </button>

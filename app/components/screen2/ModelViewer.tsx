@@ -204,7 +204,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
     <PixelBox className="flex-1 flex flex-col items-center justify-center overflow-hidden relative p-[24px]">
       <div className="w-full max-w-[400px]">
         <div className="text-center mb-[16px]">
-          <div className="text-[24px] text-[var(--text)] mb-[4px]">{craft.name}</div>
+          <div className="text-[22px] text-[var(--text)] mb-[4px]">{craft.name}</div>
           <div className="text-[18px] text-[var(--text-light)]">{stageMessage || 'Đang chuẩn bị...'}</div>
         </div>
 
@@ -219,7 +219,7 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
                 }}
               />
             </div>
-            <div className="flex justify-between text-[16px] text-[var(--text-muted)]">
+            <div className="flex justify-between text-[15px] text-[var(--text-muted)]">
               <span>{progress}%</span>
               <span>Bạn có thể làm theo hướng dẫn trong khi chờ</span>
             </div>
