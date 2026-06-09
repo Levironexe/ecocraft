@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Craft, LLMConfig, ChatMessage } from '../../lib/types';
+import { useAuth } from '../AuthProvider';
+import { loadCoachHistory, saveCoachMessage, getCoachHash } from '../../lib/coach-store';
 
 interface CoachChatProps {
   craft: Craft;
@@ -11,29 +13,41 @@ interface CoachChatProps {
 }
 
 export function CoachChat({ craft, currentStep, llmConfig, onCoachMessage }: CoachChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: `Chào bạn nhỏ! Mình là Thợ Cả, sẽ giúp bạn làm "${craft.name}" hôm nay! Hãy hỏi mình nếu cần giúp nhé!`, timestamp: Date.now() },
-  ]);
+  const { user } = useAuth();
+  const greeting: ChatMessage = useMemo(() => ({
+    role: 'assistant',
+    content: `Chào bạn nhỏ! Mình là Thợ Cả, sẽ giúp bạn làm "${craft.name}" hôm nay! Hãy hỏi mình nếu cần giúp nhé!`,
+    timestamp: Date.now(),
+  }), [craft.name]);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([greeting]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const comboHash = useMemo(() => getCoachHash(craft.materials), [craft.materials]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
   useEffect(() => {
-    setMessages([
-      { role: 'assistant', content: `Chào bạn nhỏ! Mình là Thợ Cả, sẽ giúp bạn làm "${craft.name}" hôm nay! Hãy hỏi mình nếu cần giúp nhé!`, timestamp: Date.now() },
-    ]);
-  }, [craft.id, craft.name]);
+    loadCoachHistory(user.id, comboHash).then((history) => {
+      if (history.length > 0) {
+        setMessages([greeting, ...history]);
+      } else {
+        setMessages([greeting]);
+      }
+    });
+  }, [craft.id, user.id, comboHash, greeting]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
 
     const userMessage = input.trim();
     setInput('');
-    setMessages((prev) => [...prev, { role: 'user', content: userMessage, timestamp: Date.now() }]);
+    const userMsg: ChatMessage = { role: 'user', content: userMessage, timestamp: Date.now() };
+    setMessages((prev) => [...prev, userMsg]);
+    saveCoachMessage(user.id, comboHash, userMsg);
     setIsTyping(true);
 
     try {
@@ -45,13 +59,17 @@ export function CoachChat({ craft, currentStep, llmConfig, onCoachMessage }: Coa
           message: userMessage,
           history,
           craftId: craft.id,
+          craftName: craft.name,
+          craftSteps: craft.steps,
           currentStep,
           llmConfig,
         }),
       });
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply, timestamp: Date.now() }]);
+      const assistantMsg: ChatMessage = { role: 'assistant', content: data.reply, timestamp: Date.now() };
+      setMessages((prev) => [...prev, assistantMsg]);
+      saveCoachMessage(user.id, comboHash, assistantMsg);
       onCoachMessage?.();
     } catch {
       setMessages((prev) => [...prev, { role: 'assistant', content: 'Mình đang gặp sự cố, thử lại nhé! 😅', timestamp: Date.now() }]);
@@ -63,12 +81,12 @@ export function CoachChat({ craft, currentStep, llmConfig, onCoachMessage }: Coa
   return (
     <div className="flex flex-col h-full p-[8px]">
       <div className="flex items-center gap-[10px] mb-[8px] p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
-        <div className="w-[40px] h-[40px] bg-[var(--primary)] border-[var(--pixel)] border-solid border-[var(--primary-dark)] flex items-center justify-center text-[15px]">
+        <div className="w-[40px] h-[40px] bg-[var(--primary)] border-[var(--pixel)] border-solid border-[var(--primary-dark)] flex items-center justify-center text-[18px]">
           🔧
         </div>
         <div>
           <div className="text-[15px] text-[var(--primary-dark)]">Thợ Cả</div>
-          <div className="text-[13px] text-[var(--text-light)]">Đang hỗ trợ: {craft.name} • Bước {currentStep}</div>
+          <div className="text-[13px] text-[var(--text-light)]">Đang hỗ trợ: {craft.name} · Bước {currentStep}</div>
         </div>
       </div>
 
@@ -100,7 +118,7 @@ export function CoachChat({ craft, currentStep, llmConfig, onCoachMessage }: Coa
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex gap-0 mt-[6px]">
+      <div className="flex gap-0 mt-[6px] min-w-0">
         <input
           type="text"
           placeholder="Hỏi Thợ Cả..."
@@ -108,12 +126,12 @@ export function CoachChat({ craft, currentStep, llmConfig, onCoachMessage }: Coa
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           disabled={isTyping}
-          className="flex-1 py-[8px] px-[12px] bg-white border-[var(--pixel)] border-solid border-[var(--border-dark)] outline-none focus:border-[var(--primary)]"
+          className="flex-1 min-w-0 py-[8px] px-[12px] bg-white border-[var(--pixel)] border-solid border-[var(--border-dark)] outline-none focus:border-[var(--primary)]"
         />
         <button
           onClick={handleSend}
           disabled={!input.trim() || isTyping}
-          className="pixel-btn pixel-btn-primary"
+          className="pixel-btn pixel-btn-primary shrink-0"
         >
           Gửi
         </button>

@@ -45,7 +45,7 @@ export function InventoryGrid({ selectedMaterialId, onSelect }: InventoryGridPro
           className="flex-1 py-[5px] px-[10px] border-[var(--pixel)] border-solid border-[var(--border-dark)] bg-white outline-none focus:border-[var(--primary)]"
         />
       </div>
-      <div className="grid grid-cols-4 gap-[6px] overflow-y-auto flex-1 min-h-0 content-start auto-rows-[140px]">
+      <div className="grid grid-cols-4 gap-[8px] overflow-y-auto flex-1 min-h-0 content-start">
         {filtered.length === 0 ? (
           <div className="col-span-4 text-center py-8 text-[var(--text-muted)]">
             Không tìm thấy vật liệu nào.
@@ -55,35 +55,38 @@ export function InventoryGrid({ selectedMaterialId, onSelect }: InventoryGridPro
             <button
               key={m.id}
               onClick={() => handleClick(m)}
-              className={`border-[var(--pixel)] border-solid flex flex-col items-center justify-center cursor-pointer transition-all relative p-[4px] overflow-hidden ${
+              className={`aspect-square border-[var(--pixel)] border-solid cursor-pointer transition-all relative p-[8px] overflow-hidden grid ${
                 selectedMaterialId === m.id
                   ? 'border-[var(--primary-dark)] bg-[var(--primary-light)] shadow-[0_0_0_2px_var(--primary)_inset]'
                   : 'border-[var(--border)] bg-[var(--bg-warm)] hover:border-[var(--primary)] hover:bg-[var(--primary-light)] hover:scale-[1.02]'
               }`}
+              style={{ gridTemplateRows: '1fr auto' }}
             >
               {selectedMaterialId === m.id && (
-                <span className="absolute top-[2px] right-[5px] text-[var(--primary-dark)] text-[18px] z-10">✓</span>
+                <span className="absolute top-[4px] right-[6px] text-[var(--primary-dark)] text-[18px] z-10">✓</span>
               )}
-              {m.modelPath ? (
-                <model-viewer
-                  src={m.modelPath}
-                  auto-rotate
-                  camera-controls={false}
-                  shadow-intensity="0"
-                  style={{
-                    width: '100%',
-                    height: '90px',
-                    pointerEvents: 'none',
-                    backgroundColor: 'transparent',
-                    // @ts-expect-error model-viewer custom CSS property
-                    '--poster-color': 'transparent',
-                  }}
-                  rotation-per-second="36deg"
-                />
-              ) : (
-                <span className="text-[22px] mb-[2px]">{m.emoji}</span>
-              )}
-              <span className={`text-[18px] text-center leading-tight mt-auto ${
+              <div className="flex items-center justify-center min-h-0">
+                {m.modelPath ? (
+                  <model-viewer
+                    src={m.modelPath}
+                    auto-rotate
+                    camera-controls={false}
+                    shadow-intensity="0"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      pointerEvents: 'none',
+                      backgroundColor: 'transparent',
+                      // @ts-expect-error model-viewer custom CSS property
+                      '--poster-color': 'transparent',
+                    }}
+                    rotation-per-second="36deg"
+                  />
+                ) : (
+                  <span className="text-[28px]">{m.emoji}</span>
+                )}
+              </div>
+              <span className={`text-[15px] text-center leading-tight pt-[4px] ${
                 selectedMaterialId === m.id ? 'text-[var(--primary-dark)]' : 'text-[var(--text-light)]'
               }`}>
                 {m.name}
@@ -92,7 +95,6 @@ export function InventoryGrid({ selectedMaterialId, onSelect }: InventoryGridPro
           ))
         )}
       </div>
-
     </div>
   );
 }

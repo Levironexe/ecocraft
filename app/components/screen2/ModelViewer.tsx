@@ -189,11 +189,9 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
               <img src={refImageUrl!} alt="Reference" className="max-w-full max-h-full object-contain" />
             </div>
           )}
-          {craft.id.startsWith('ai-suggestion-') && viewMode === '3d' && (
-            <div className="absolute bottom-[8px] left-[8px] text-[18px] text-[var(--text-muted)] bg-[var(--bg-card)] px-[8px] py-[2px]">
-              Mô hình AI
-            </div>
-          )}
+          <div className="absolute bottom-[8px] left-[8px] text-[16px] text-[var(--text)] px-[8px] py-[2px]">
+            Mô hình minh họa từ AI — làm theo hướng dẫn bên cạnh
+          </div>
         </div>
       </div>
     );

@@ -7,32 +7,27 @@ import { LLMConfig } from '../../lib/types';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { message, history = [], craftId, currentStep, llmConfig } = body as {
+    const { message, history = [], craftId, craftName: clientCraftName, craftSteps: clientSteps, currentStep, llmConfig } = body as {
       message: string;
       history: { role: 'user' | 'assistant'; content: string }[];
       craftId: string;
+      craftName?: string;
+      craftSteps?: { number: number; title: string; detail: string; tip?: string }[];
       currentStep: number;
       llmConfig: LLMConfig;
     };
 
-    const craft = crafts.find((c) => c.id === craftId);
+    const libraryCraft = crafts.find((c) => c.id === craftId);
 
-    let craftName = 'Sản phẩm tái chế';
-    let stepTitle = '';
-    let stepDetail = '';
-    let stepsSummary = '';
+    const craftName = libraryCraft?.name || clientCraftName || 'Sản phẩm tái chế';
+    const steps = libraryCraft?.steps || clientSteps || [];
+    const currentStepObj = steps.find((s) => s.number === currentStep);
 
-    if (craft) {
-      craftName = craft.name;
-      const step = craft.steps.find((s) => s.number === currentStep);
-      stepTitle = step?.title || '';
-      stepDetail = step?.detail || '';
-      stepsSummary = craft.steps.map((s) => `${s.number}. ${s.title}: ${s.detail}`).join('\n');
-    } else {
-      stepTitle = `Bước ${currentStep}`;
-      stepDetail = 'Đang thực hiện';
-      stepsSummary = 'Sản phẩm được gợi ý bởi AI';
-    }
+    const stepTitle = currentStepObj?.title || `Bước ${currentStep}`;
+    const stepDetail = currentStepObj?.detail || 'Đang thực hiện';
+    const stepsSummary = steps.length > 0
+      ? steps.map((s) => `${s.number}. ${s.title}: ${s.detail}`).join('\n')
+      : 'Sản phẩm được gợi ý bởi AI';
 
     const prompt = BUILD_COACH_PROMPT
       .replace('{craft_name}', craftName)

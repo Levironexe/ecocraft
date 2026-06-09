@@ -35,7 +35,7 @@ export function MaterialModal({ material, onClose }: MaterialModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50" />
       <div
-        className="pixel-box relative z-10 w-[600px] max-w-[90vw] max-h-[85vh] flex flex-col"
+        className="pixel-box relative z-10 w-[800px] max-w-[90vw] max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -47,7 +47,7 @@ export function MaterialModal({ material, onClose }: MaterialModalProps) {
         </button>
 
         {/* 3D Model viewer */}
-        <div className="h-[350px] bg-[var(--bg-warm)] border-b-[var(--pixel)] border-b-solid border-b-[var(--border)]">
+        <div className="h-[450px] bg-[var(--bg-warm)] border-b-[var(--pixel)] border-b-solid border-b-[var(--border)]">
           {material.modelPath ? (
             <model-viewer
               src={material.modelPath}
