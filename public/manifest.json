@@ -1,0 +1,22 @@
+{
+  "name": "EcoCraft AI — Sáng Tạo Từ Rác",
+  "short_name": "EcoCraft AI",
+  "description": "Ứng dụng giúp trẻ em biến rác tái chế thành đồ chơi sáng tạo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff8f0",
+  "theme_color": "#2196f3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
