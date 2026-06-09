@@ -5,12 +5,12 @@ import { Craft, SelectedItem } from '../../lib/types';
 import { materials } from '../../lib/materials';
 
 const toolModels: Record<string, string> = {
-  'Kéo': '/models/keo-cat.glb',
-  'Keo dán': '/models/keo-dan.glb',
-  'Bút lông': '/models/but-long.glb',
-  'Sơn': '/models/son.glb',
-  'Băng keo': '/models/bang-keo.glb',
-  'Búa nhỏ': '/models/bua-nho.glb',
+  'Kéo': 'https://oxazgmvqiacyvbnviesf.supabase.co/storage/v1/object/public/models/materials/keo-cat.glb',
+  'Keo dán': 'https://oxazgmvqiacyvbnviesf.supabase.co/storage/v1/object/public/models/materials/keo-dan.glb',
+  'Bút lông': 'https://oxazgmvqiacyvbnviesf.supabase.co/storage/v1/object/public/models/materials/but-long.glb',
+  'Sơn': 'https://oxazgmvqiacyvbnviesf.supabase.co/storage/v1/object/public/models/materials/son.glb',
+  'Băng keo': 'https://oxazgmvqiacyvbnviesf.supabase.co/storage/v1/object/public/models/materials/bang-keo.glb',
+  'Búa nhỏ': 'https://oxazgmvqiacyvbnviesf.supabase.co/storage/v1/object/public/models/materials/bua-nho.glb',
 };
 
 interface MaterialsBarProps {
