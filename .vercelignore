@@ -1,0 +1,7 @@
+public/models/*.glb
+public/image-reference/
+demo/
+docs/
+specs/
+.specify/
+.claude/

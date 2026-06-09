@@ -46,3 +46,7 @@ public/models/*.glb
 # local IDE/editor
 .vscode/
 .claude/
+
+# Disable any speckit specs
+specs/
+docs/
