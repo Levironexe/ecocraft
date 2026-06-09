@@ -21,6 +21,10 @@ export const metadata: Metadata = {
   title: "EcoCraft AI — Sáng Tạo Từ Rác",
   description: "Ứng dụng giúp trẻ em biến rác tái chế thành đồ chơi sáng tạo",
   manifest: "/manifest.json",
+  icons: {
+    icon: '/icons/favicon.svg',
+    apple: '/icons/icon.svg',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

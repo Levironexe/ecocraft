@@ -1,6 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="80" fill="#f5faf5"/>
-  <g transform="translate(256,230) scale(5.5)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <g transform="translate(16,14) scale(0.35)">
     <path d="M0,-22 C-10,-18 -18,-8 -18,4 C-18,14 -10,22 0,26 C10,22 18,14 18,4 C18,-8 10,-18 0,-22Z" fill="#4CAF50"/>
     <path d="M0,-22 C10,-18 18,-8 18,4 C18,14 10,22 0,26" fill="#66BB6A"/>
     <line x1="0" y1="-18" x2="0" y2="26" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/>
