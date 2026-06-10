@@ -10,13 +10,13 @@ Added sections:
   - Governance
 Removed sections: N/A
 Templates requiring updates:
-  - .specify/templates/plan-template.md — ✅ compatible (Constitution Check section exists)
-  - .specify/templates/spec-template.md — ✅ compatible (user stories + requirements sections align)
-  - .specify/templates/tasks-template.md — ✅ compatible (phase structure aligns with incremental delivery)
+  - .specify/templates/plan-template.md — compatible (Constitution Check section exists)
+  - .specify/templates/spec-template.md — compatible (user stories + requirements sections align)
+  - .specify/templates/tasks-template.md — compatible (phase structure aligns with incremental delivery)
 Follow-up TODOs: None
 -->
 
-# EcoCraft AI Constitution
+# Rác Thải Xanh AI Constitution
 
 ## Core Principles
 
@@ -94,7 +94,7 @@ particles, animations) is required but MUST NOT block functionality.
 
 ## Governance
 
-This constitution supersedes all other development practices for EcoCraft AI.
+This constitution supersedes all other development practices for Rác Thải Xanh AI.
 All implementation decisions MUST be evaluated against these principles.
 
 **Amendment Procedure**:

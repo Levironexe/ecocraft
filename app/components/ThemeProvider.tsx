@@ -22,8 +22,8 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const THEME_STORAGE_KEY = 'ecocraft-theme';
-const FONT_STORAGE_KEY = 'ecocraft-font';
+const THEME_STORAGE_KEY = 'rac-thai-xanh-ai-theme';
+const FONT_STORAGE_KEY = 'rac-thai-xanh-ai-font';
 const DEFAULT_THEME = 'sky-coral';
 const DEFAULT_FONT: FontId = 'grandstander';
 

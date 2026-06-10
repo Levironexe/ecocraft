@@ -40,7 +40,7 @@ export function LoginScreen() {
       <PixelBox className="w-[400px] p-[32px]">
         <div className="text-center mb-[24px]">
           <div className="text-[48px]">🌿</div>
-          <h1 className="text-[32px] text-[var(--primary-dark)]">EcoCraft AI</h1>
+          <h1 className="text-[32px] text-[var(--primary-dark)]">Rác Thải Xanh AI</h1>
           <p className="text-[18px] text-[var(--text-light)]">Sáng Tạo Từ Rác</p>
         </div>
 

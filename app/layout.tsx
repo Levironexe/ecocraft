@@ -18,7 +18,7 @@ const grandstander = Grandstander({
 });
 
 export const metadata: Metadata = {
-  title: "EcoCraft AI — Sáng Tạo Từ Rác",
+  title: "Rác Thải Xanh AI — Sáng Tạo Từ Rác",
   description: "Ứng dụng giúp trẻ em biến rác tái chế thành đồ chơi sáng tạo",
   manifest: "/manifest.json",
   icons: {
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "EcoCraft AI",
+    title: "Rác Thải Xanh AI",
   },
 };
 

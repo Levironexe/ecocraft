@@ -1,7 +1,7 @@
 import { GameStats, Craft } from './types';
 import { createBrowserClient } from './supabase';
 
-const LOCAL_STORAGE_KEY = 'ecocraft-stats';
+const LOCAL_STORAGE_KEY = 'rac-thai-xanh-ai-stats';
 
 const DEFAULT_STATS: GameStats = {
   craftsCompleted: 0,

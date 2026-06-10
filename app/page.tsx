@@ -11,7 +11,7 @@ import { SuggestionCards } from './components/screen1/SuggestionCards';
 import { BuildScreen } from './components/screen2/BuildScreen';
 import { CraftHistory } from './components/screen2/CraftHistory';
 
-const LLM_CONFIG_KEY = 'ecocraft-llm-config';
+const LLM_CONFIG_KEY = 'rac-thai-xanh-ai-llm-config';
 
 export default function Home() {
   const { user } = useAuth();

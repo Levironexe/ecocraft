@@ -33,7 +33,7 @@ export function HUD({ llmConfig, onConfigChange, gameStats }: HUDProps) {
               clipPath: 'polygon(50% 0%, 100% 40%, 80% 100%, 50% 80%, 20% 100%, 0% 40%)',
             }}
           />
-          EcoCraft AI
+          Rác Thải Xanh AI
         </div>
 
         <div className="flex gap-[18px] items-center">
