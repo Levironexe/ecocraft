@@ -1,26 +1,35 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { SelectedItem, LLMConfig, ChatMessage, Craft, MatchResult } from '../../lib/types';
+import { LLMConfig, ChatMessage, Craft } from '../../lib/types';
 import { PixelButton } from '../ui/PixelButton';
+import { PixelBox } from '../ui/PixelBox';
 import { useAuth } from '../AuthProvider';
 import { loadChatHistory, saveChatMessage } from '../../lib/chat-store';
+import { materials } from '../../lib/materials';
+import { useAppStore } from '../../lib/store';
 
-interface ChatModeProps {
-  selectedItems: SelectedItem[];
-  llmConfig: LLMConfig;
-  onAddItems: (items: SelectedItem[]) => void;
-  onUpdateSuggestions: (crafts: MatchResult[], aiCraft?: Craft) => void;
+interface CraftProposal {
+  name: string;
+  emoji: string;
+  description: string;
+  materials: { id: string; quantity: number }[];
 }
 
-export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggestions }: ChatModeProps) {
+interface ChatModeProps {
+  llmConfig: LLMConfig;
+}
+
+export function ChatMode({ llmConfig }: ChatModeProps) {
   const { user } = useAuth();
+  const selectCraft = useAppStore((s) => s.selectCraft);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: 'Chào bạn nhỏ! Hãy kể cho mình nghe bạn có những vật liệu tái chế gì nhé!', timestamp: Date.now() },
+    { role: 'assistant', content: 'Chào bạn! Kể cho mình nghe bạn có vật liệu gì và muốn làm gì nhé! 🎨', timestamp: Date.now() },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [pendingItems, setPendingItems] = useState<SelectedItem[]>([]);
+  const [pendingCraft, setPendingCraft] = useState<{ proposal: CraftProposal; craft: Craft } | null>(null);
+  const [craftLoading, setCraftLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -32,7 +41,7 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+  }, [messages, isTyping, pendingCraft]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -43,18 +52,14 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
     setMessages((prev) => [...prev, userMsg]);
     saveChatMessage(user.id, userMsg);
     setIsTyping(true);
+    setPendingCraft(null);
 
     try {
       const history = messages.map((m) => ({ role: m.role, content: m.content }));
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/craft-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: userMessage,
-          history,
-          selectedItems,
-          llmConfig,
-        }),
+        body: JSON.stringify({ message: userMessage, history, llmConfig }),
       });
 
       const data = await res.json();
@@ -62,40 +67,36 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
       setMessages((prev) => [...prev, assistantMsg]);
       saveChatMessage(user.id, assistantMsg);
 
-      if (data.extractedItems?.length > 0) {
-        setPendingItems(data.extractedItems);
-      }
-
-      if (data.matchedCrafts) {
-        onUpdateSuggestions(data.matchedCrafts);
-      }
-
-      if (data.suggestedCraft) {
-        onUpdateSuggestions([], data.suggestedCraft);
+      if (data.craft && data.proposal) {
+        setPendingCraft({ proposal: data.proposal, craft: data.craft });
       }
     } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'Mình đang gặp sự cố, thử lại nhé! 😅', timestamp: Date.now() }]);
+      setMessages((prev) => [...prev, {
+        role: 'assistant',
+        content: 'Mình đang gặp sự cố, thử lại nhé!',
+        timestamp: Date.now(),
+      }]);
     } finally {
       setIsTyping(false);
       inputRef.current?.focus();
     }
   };
 
-  const handleAddPending = () => {
-    onAddItems(pendingItems);
-    setPendingItems([]);
-    setMessages((prev) => [...prev, { role: 'assistant', content: 'Đã thêm vào túi!', timestamp: Date.now() }]);
+  const handleCraftNow = () => {
+    if (!pendingCraft) return;
+    setCraftLoading(true);
+    selectCraft(pendingCraft.craft, 'ai-chat');
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div className="flex flex-col flex-1 min-h-0 p-[14px]">
       <div className="flex items-center gap-[10px] mb-[8px] p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
         <div className="w-[40px] h-[40px] bg-[var(--primary)] border-[var(--pixel)] border-solid border-[var(--primary-dark)] flex items-center justify-center text-[15px]">
-          🤖
+          🎨
         </div>
         <div>
-          <div className="text-[15px] text-[var(--primary-dark)]">Trợ Lý AI</div>
-          <div className="text-[13px] text-[var(--text-light)]">Giúp bạn tìm vật liệu</div>
+          <div className="text-[15px] text-[var(--primary-dark)]">Trợ Lý Sáng Tạo</div>
+          <div className="text-[13px] text-[var(--text-light)]">Kể cho mình bạn muốn làm gì!</div>
         </div>
       </div>
 
@@ -118,12 +119,33 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
           </div>
         ))}
 
-        {pendingItems.length > 0 && (
-          <div className="self-start p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)]">
-            <div className="text-[13px] mb-[6px]">Thêm vào túi?</div>
-            <PixelButton variant="primary" onClick={handleAddPending}>
-              Thêm {pendingItems.length} vật liệu
+        {pendingCraft && !craftLoading && (
+          <PixelBox className="self-start max-w-[90%] p-[12px]">
+            <div className="text-[18px] mb-[6px]">
+              {pendingCraft.proposal.emoji} {pendingCraft.proposal.name}
+            </div>
+            <div className="text-[14px] text-[var(--text-light)] mb-[8px]">
+              {pendingCraft.proposal.description}
+            </div>
+            <div className="flex flex-wrap gap-[4px] mb-[10px]">
+              {pendingCraft.proposal.materials.map((m, i) => {
+                const mat = materials.find((mat) => mat.id === m.id);
+                return mat ? (
+                  <span key={i} className="text-[13px] px-[6px] py-[2px] bg-[var(--primary-light)] border-[1px] border-solid border-[var(--primary)]">
+                    {mat.emoji} {mat.name} x{m.quantity}
+                  </span>
+                ) : null;
+              })}
+            </div>
+            <PixelButton variant="accent" fullWidth onClick={handleCraftNow}>
+              Chế Tạo Ngay!
             </PixelButton>
+          </PixelBox>
+        )}
+
+        {craftLoading && (
+          <div className="self-start p-[8px] bg-[var(--primary-light)] border-[2px] border-solid border-[var(--primary)] text-[15px]">
+            Đang chuẩn bị xưởng chế tạo...
           </div>
         )}
 
@@ -140,7 +162,7 @@ export function ChatMode({ selectedItems, llmConfig, onAddItems, onUpdateSuggest
         <input
           ref={inputRef}
           type="text"
-          placeholder="Mô tả vật liệu của bạn..."
+          placeholder="Mô tả vật liệu và ý tưởng của bạn..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}

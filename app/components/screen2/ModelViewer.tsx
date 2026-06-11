@@ -4,6 +4,8 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { Craft } from '../../lib/types';
 import { materials } from '../../lib/materials';
 import { PixelBox } from '../ui/PixelBox';
+import { updateCraftStatus } from '../../lib/craft-store';
+import { useAppStore } from '../../lib/store';
 
 interface ModelViewerProps {
   craft: Craft;
@@ -21,6 +23,7 @@ type PipelineStage = 'idle' | 'generating-3d' | 'done' | 'error';
 type ViewMode = '3d' | 'image';
 
 export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelViewerProps) {
+  const craftDbId = useAppStore((s) => s.craftDbId);
   const [glbUrl, setGlbUrl] = useState<string | null>(null);
   const [refImageUrl, setRefImageUrl] = useState<string | null>(null);
   const [stage, setStage] = useState<PipelineStage>('idle');
@@ -126,6 +129,9 @@ export function ModelViewer({ craft, cachedImageUrl, onImageGenerated }: ModelVi
           setStage('done');
           setStageMessage(data.fromCache ? 'Mô hình từ kho!' : 'Mô hình 3D hoàn tất!');
           onImageGenerated?.(data.glbUrl);
+          if (craftDbId) {
+            updateCraftStatus(craftDbId, 'completed', data.glbUrl, data.referenceImageUrl);
+          }
         } else if (data.error) {
           setStage('error');
           setStageMessage('Không tạo được mô hình 3D');

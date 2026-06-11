@@ -100,9 +100,9 @@ export async function generateAndStoreModel(
 
   if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
-  const { error: insertError } = await supabase
+  const { error: upsertError } = await supabase
     .from('generated_models')
-    .insert({
+    .upsert({
       material_combo_hash: hash,
       materials: selectedItems.map((i) => ({ materialId: i.materialId, quantity: i.quantity })),
       craft_name: craftName,
@@ -110,10 +110,12 @@ export async function generateAndStoreModel(
       glb_storage_path: storagePath,
       meshy_task_id: taskId,
       steps: steps || [],
-    });
+      status: 'completed',
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'material_combo_hash' });
 
-  if (insertError) {
-    console.error('DB insert error (model still uploaded):', insertError);
+  if (upsertError) {
+    console.error('DB upsert error (model still uploaded):', upsertError);
   }
 
   const { data: urlData } = supabase.storage

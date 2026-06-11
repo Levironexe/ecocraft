@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Material, SelectedItem, Craft, LLMConfig, MatchResult, GameStats } from './types';
 import { crafts } from './crafts';
 import { matchCrafts } from './matcher';
+import { saveCraftToDb } from './craft-store';
 
 interface AppState {
   // Auth
@@ -31,7 +32,8 @@ interface AppState {
 
   // Screen 2 — Build
   selectedCraft: Craft | null;
-  selectCraft: (craft: Craft) => void;
+  craftDbId: string | null;
+  selectCraft: (craft: Craft, source?: 'manual' | 'ai-chat' | 'library') => void;
   selectCraftFromHistory: (craft: Craft, glbUrl: string, refImageUrl?: string) => void;
 
   // LLM config
@@ -99,7 +101,16 @@ export const useAppStore = create<AppState>((set, get) => ({
   setAiMatchedCrafts: (matched) => set({ aiMatchedCrafts: matched }),
 
   selectedCraft: null,
-  selectCraft: (craft) => set({ selectedCraft: craft, showHistory: false, activeScreen: 2 }),
+  craftDbId: null,
+  selectCraft: (craft, source = 'manual') => {
+    set({ selectedCraft: craft, showHistory: false, activeScreen: 2, craftDbId: null });
+    const userId = get().userId;
+    if (userId) {
+      saveCraftToDb(userId, craft, source).then((id) => {
+        if (id) set({ craftDbId: id });
+      });
+    }
+  },
   selectCraftFromHistory: (craft, glbUrl, refImageUrl) => set((s) => {
     const cache = { ...s.imageCache, [craft.id]: glbUrl };
     if (refImageUrl) cache[`${craft.id}-ref`] = refImageUrl;
