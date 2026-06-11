@@ -55,26 +55,23 @@ export function MaterialScreen({
         </div>
       </div>
 
-      {mode === 'inventory' ? (
-        <div className="grid grid-cols-2 gap-0 h-[calc(100%-50px)]">
-          <div className="p-[14px] border-r-[var(--pixel)] border-r-solid border-r-[var(--border)] overflow-hidden flex flex-col">
-            <InventoryGrid
-              selectedMaterialId={selectedMaterial?.id ?? null}
-              onSelect={onSelectMaterial}
-            />
-          </div>
-          <div className="p-[14px] flex flex-col overflow-y-auto">
-            <ItemPreview material={selectedMaterial} onAdd={onAddItem} />
-            <SelectedItems items={selectedItems} onRemove={onRemoveItem} onCraft={onCraft} craftLoading={craftLoading} />
-          </div>
-        </div>
-      ) : (
-        <div className="h-[calc(100%-50px)] flex flex-col">
-          <ChatMode
-            llmConfig={llmConfig}
+      <div style={{ display: mode === 'inventory' ? 'grid' : 'none' }} className="grid-cols-2 gap-0 h-[calc(100%-50px)]">
+        <div className="p-[14px] border-r-[var(--pixel)] border-r-solid border-r-[var(--border)] overflow-hidden flex flex-col">
+          <InventoryGrid
+            selectedMaterialId={selectedMaterial?.id ?? null}
+            onSelect={onSelectMaterial}
           />
         </div>
-      )}
+        <div className="p-[14px] flex flex-col overflow-y-auto">
+          <ItemPreview material={selectedMaterial} onAdd={onAddItem} />
+          <SelectedItems items={selectedItems} onRemove={onRemoveItem} onCraft={onCraft} craftLoading={craftLoading} />
+        </div>
+      </div>
+      <div style={{ display: mode === 'chat' ? 'flex' : 'none' }} className="flex-col h-[calc(100%-50px)]">
+        <ChatMode
+          llmConfig={llmConfig}
+        />
+      </div>
     </div>
   );
 }

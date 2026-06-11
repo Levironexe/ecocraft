@@ -87,31 +87,29 @@ export default function Home() {
         />
       </div>
 
-      {/* Screen 2 — Build or History */}
-      {activeScreen === 2 && (
-        <div className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
-          {selectedCraft && !showHistory ? (
-            <BuildScreen
-              craft={selectedCraft}
-              selectedItems={selectedItems}
-              llmConfig={llmConfig}
-              onCraftComplete={handleCraftComplete}
-              onCoachMessage={handleCoachMessage}
-              imageCache={imageCache}
-              onImageGenerated={(craftId, url) => setImageCache(craftId, url)}
-              onShowHistory={() => setShowHistory(true)}
-            />
-          ) : (
-            <CraftHistory
-              onBack={() => {
-                setShowHistory(false);
-                if (!selectedCraft) setActiveScreen(1);
-              }}
-              onSelectCraft={selectCraftFromHistory}
-            />
-          )}
-        </div>
-      )}
+      {/* Screen 2 — Build or History, stays mounted */}
+      <div style={{ display: activeScreen === 2 ? 'flex' : 'none' }} className="flex-1 mx-[16px] mb-[16px] border-[var(--pixel)] border-solid border-[var(--border-dark)] border-t-0 bg-[var(--bg-card)]">
+        {selectedCraft && !showHistory ? (
+          <BuildScreen
+            craft={selectedCraft}
+            selectedItems={selectedItems}
+            llmConfig={llmConfig}
+            onCraftComplete={handleCraftComplete}
+            onCoachMessage={handleCoachMessage}
+            imageCache={imageCache}
+            onImageGenerated={(craftId, url) => setImageCache(craftId, url)}
+            onShowHistory={() => setShowHistory(true)}
+          />
+        ) : (
+          <CraftHistory
+            onBack={() => {
+              setShowHistory(false);
+              if (!selectedCraft) setActiveScreen(1);
+            }}
+            onSelectCraft={selectCraftFromHistory}
+          />
+        )}
+      </div>
     </div>
   );
 }
