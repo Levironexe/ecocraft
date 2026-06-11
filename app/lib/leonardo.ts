@@ -28,7 +28,12 @@ function getApiKey(): string {
 }
 
 async function uploadImage(apiKey: string, filePath: string): Promise<string> {
-  const fileBuffer = readFileSync(filePath);
+  let fileBuffer: Buffer;
+  try {
+    fileBuffer = readFileSync(filePath);
+  } catch {
+    throw new Error(`Reference image not found: ${filePath}`);
+  }
   const ext = filePath.split('.').pop() || 'jpg';
   const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg';
 
@@ -60,7 +65,7 @@ async function uploadImage(apiKey: string, filePath: string): Promise<string> {
   for (const [key, value] of Object.entries(parsedFields)) {
     formData.append(key, value as string);
   }
-  formData.append('file', new Blob([fileBuffer], { type: mimeType }));
+  formData.append('file', new Blob([new Uint8Array(fileBuffer)], { type: mimeType }));
 
   const uploadRes = await fetch(uploadUrl, { method: 'POST', body: formData });
   if (!uploadRes.ok && uploadRes.status !== 204) {

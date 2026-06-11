@@ -47,7 +47,7 @@ export function LoginScreen() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-[12px]">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Địa chỉ email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

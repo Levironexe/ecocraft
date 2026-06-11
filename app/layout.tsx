@@ -4,6 +4,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./components/AuthProvider";
 import { PixelParticles } from "./components/PixelParticles";
 import { Analytics } from "@vercel/analytics/next";
+import { ServiceWorkerRegistration } from "./components/ServiceWorkerRegistration";
 import "./globals.css";
 
 const vt323 = VT323({
@@ -48,6 +49,7 @@ export default function RootLayout({
     <html lang="vi" className={`${vt323.variable} ${grandstander.variable}`}>
       <body>
         <Analytics />
+        <ServiceWorkerRegistration />
         <PixelParticles />
         <ThemeProvider>
           <AuthProvider>
